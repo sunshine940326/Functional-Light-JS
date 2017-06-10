@@ -7,7 +7,7 @@ In Chapter 2, we discussed how a function can have outputs besides its `return` 
 我们将研究各种各样的副作用并且要看看他们为什么会对我们的代码质量和可读性造成损害。
 We're going to examine the various different forms of side effects and see why they are harmful to our code's quality and readability.
 
-这一章的要点是编写出没有副作用的程序是不可能的。当然，也不是不可能，当然可以编写出没有副作用的程序。但是这样的话程序就不会做任何有用和显著的事情。如果你编写出来一个0副作用的程序，你就无法区分它和一个被删除的或者空程序的区别。
+这一章的要点是编写出没有副作用的程序是不可能的。当然，也不是不可能，当然可以编写出没有副作用的程序。但是这样的话程序就不会做任何有用和显著的事情。如果你编写出来一个零副作用的程序，你就无法区分它和一个被删除的或者空程序的区别。
 But let me not bury the lede here. The punchline to this chapter: it's impossible to write a program with no side effects. Well, not impossible; you certainly can. But that program won't do anything useful or observable. If you wrote a program with zero side effects, you wouldn't be able to tell the difference between it and a deleted or empty program.
 
 函数式编程者并没有消除所有的副作用。相反，我们的目标是尽可能的限制他们。要做到这一点，我们首先需要完全理解函数式编程的副作用。
@@ -22,9 +22,10 @@ Cause and effect: one of the most fundamental, intuitive observations we humans 
 在编程中，我们也完全会处理因果关系。如果你调用了一个函数（起因），就会在屏幕上输出一条消息（结果）。
 In programming, we also deal entirely in cause and effect. If you call a function (cause), it displays a message on the screen (effect).
 
-当我们在阅读程序的时候，能够清晰明确的知道每一个起因和每一个结果是非常重要的。在某种程度上，
+当我们在阅读程序的时候，能够清晰明确的知道每一个起因和每一个结果是非常重要的。在某种程度上，当有明确的因果关系的时候程序的可读性就就会降低。
 When reading a program, it's supremely important that the reader be able to clearly identify each cause and each effect. To any extent where a direct relationship between cause and effect cannot be seen readily upon a read-through of the program, that program's readability is degraded.
 
+思考一下：
 Consider:
 
 ```js
@@ -35,8 +36,10 @@ function foo(x) {
 var y = foo( 3 );
 ```
 
+在这段琐碎的代码中，因果关系清晰明了，调用函数foo()是起因，传入参数为3将会返回值为6，将函数结果赋值给变量y是结果。这里没有歧义
 In this trivial program, it is immediately clear that calling foo (the cause) with value `3` will have the effect of returning the value `6` that is then assigned to `y` (the effect). There's no ambiguity here.
 
+但是当这种情况：
 But now:
 
 ```js
@@ -48,21 +51,26 @@ var y;
 
 foo( 3 );
 ```
-
+这段代码有相同的输出，但是却有很大的不同，这里的因果是没有联系的。这就会有间接的影响。这种方式设置的'y'就是我们所说的间接影响。
 This program has the exact same outcome. But there's a very big difference. The cause and the effect are disjoint. The effect is indirect. The setting of `y` in this way is what we call a side effect.
 
+**注意:** 当函数对外部变量进行引用时，这就称为自由变量。并不是所有的自由变量引用都是不好的，但是我们要对它们非常小心。
 **Note:** When a function makes a reference to a variable outside itself, this is called a free variable. Not all free variable references will be bad, but we'll want to be very careful with them.
 
+如果我引用一个函数`bar(..)`，你看不到代码，但是我告诉你这段代码并没有间接的副作用，只有一个显式的返回值。
 What if I gave you a reference to call a function `bar(..)` that you cannot see the code for, but I told you that it had no such indirect side effects, only an explicit `return` value effect?
 
 ```js
 bar( 4 );			// 42
 ```
 
+因为你知道`bar(..)`的内部结构不会有副作用，你可以像这样一样直接的调用`bar(..)`。但是如果你不知道`bar(..)`有没有副作用，为了理解调用这个函数的结果，你必须去阅读和分析它的逻辑。这对使用者来说是额外的负担。
 Because you know that the internals of `bar(..)` do not create any side effects, you can now reason about any `bar(..)` call like this one in a much more straightforward way. But if you didn't know that `bar(..)` had no side effects, to understand the outcome of calling it, you'd have to go read and dissect all of its logic. This is extra mental tax burden for the reader.
 
+副作用函数的可读性更低，因为它需要更多的阅读来理解程序。
 **The readability of a side effecting function is less** because it requires more reading to understand the program.
 
+但是程序往往比这个要复杂，思考一下：
 But the problem goes deeper than that. Consider:
 
 ```js
@@ -80,19 +88,25 @@ baz();
 
 console.log( x );
 ```
-
+你能确定每次`console.log(x)`的值都是你想要的吗？
 How sure are you what values are going to be printed at each `console.log(x)`?
 
+答案是否定的。如果你不确定`foo()`, `bar()`, and `baz()`是否有副作用，你就不能保证每一步的`x`将会是什么，除非您检查每个步骤的实现，然后从第一行开始跟踪程序，跟踪您所处的状态的所有更改。
 The correct answer is: not at all. If you're not sure whether `foo()`, `bar()`, and `baz()` are side-effecting or not, you cannot guarantee what `x` will be at each step unless you inspect the implementations of each, **and** then trace the program from line one forward, keeping track of all the changes in state as you go.
 
+换句话说，`console.log(x)`最后的结果是不能分析和预测的除非你已经在心里将整个程序都执行一遍了。
 In other words, the final `console.log(x)` is impossible to analyze or predict unless you've mentally executed the whole program up to that point.
 
+猜猜谁擅长运行你的程序？JS引擎。猜猜谁不擅长运行你的程序？你的代码的读者。然而，你选择在一个或多个函数调用中编写带有(潜在)副作用的代码，这意味着你已经使你的读者不得不将你的程序完整地执行到某一行，以便他们理解这一行。
 Guess who's good at running your program? The JS engine. Guess who's not as good at running your program? The reader of your code. And yet, your choice to write code with (potentially) side effects in one or more of those function calls means that you've burdened the reader with having to mentally execute your program in its entirety up to a certain line, for them to understand that line.
 
+如果 `foo()`, `bar()`, and `baz()`都没有副作用，它们就不会影响到`x`，这就意味着我们不需要在心里默默地执行它们并且跟踪`x`的变化。这在心里上减轻负担并且使得代码更加的可读。
 If `foo()`, `bar()`, and `baz()` were all free of side effects, they could not affect `x`, which means we do not need to execute them to mentally trace what happens with `x`. This is less mental tax, and makes the code more readable.
 
+### 隐藏的原因
 ### Hidden Causes
 
+输出、状态的变化，是最常被引用的副作用的表现。但是另一个有损可读性的实践是另一些原因，思考一下：
 Outputs, changes in state, are the most commonly cited manifestation of side effects. But another readability-harming practice is what some refer to as side causes. Consider:
 
 ```js
@@ -105,6 +119,7 @@ var y = 3;
 foo( 1 );			// 4
 ```
 
+`y`不会随着`foo(..)`改变，所以这和我们之前看到的副作用有所不同。但是现在，对函数`foo(..)`的调用实际上取决于`y`当前的状态。之后，我们做：
 `y` is not changed by `foo(..)`, so it's not the same kind of side effect as we saw before. But now, the calling of `foo(..)` actually depends on the presence and current state of a `y`. If later, we do:
 
 ```js
@@ -115,16 +130,22 @@ y = 5;
 foo( 1 );			// 6
 ```
 
+我们可能会感到惊讶两次调用 `foo(1)`返回的结果不一样。
 Might we be surprised that the call to `foo(1)` returned different results from call to call?
 
+`foo(..)`对可读性有一个间接的破坏性。如果没有仔细对函数`foo(..)`进行检查 ，使用者可能不会知道导致这个输出的原因。这*看起来*仅仅像是参数`1`的原因，但却不是这样的。
 `foo(..)` has an indirection of cause that is harmful to readability. The reader cannot see, without inspecting `foo(..)`'s implementation carefully, what causes are contributing to the output effect. It *looks* like the argument `1` is the only cause, but it turns out it's not.
 
+为了帮助可读性，所有决定`foo(..)`输出的原因应该被设置的直接并明显。函数的使用者将会直接看到原因和结果。
 To aid readability, all of the causes that will contribute to determining the effect output of `foo(..)` should be made as direct and obvious inputs to `foo(..)`. The reader of the code will clearly see the cause(s) and effect.
 
+#### 定态
 #### Fixed State
 
+避免副作用就意味着函数`foo(..)`不能使用自有变量了吗？
 Does avoiding side causes mean the `foo(..)` function cannot reference any free variables?
 
+考虑下这段代码
 Consider this code:
 
 ```js
@@ -139,12 +160,16 @@ function bar(x) {
 foo( 3 );			// 9
 ```
 
+很明显，对于函数`foo(..)`和函数`bar(..)`，唯一和直接的原因就是参数`x`。但是对于调用函数`bar(x)`的时候，`bar`仅仅只是一个标识符，在JS中，它甚至不是一个常量（非可分配常量）。`foo(..)`函数是依赖于一个自有变量`bar`，`bar`是另一个函数的变量。
 It's clear that for both `foo(..)` and `bar(..)`, the only direct cause is the `x` parameter. But what about the `bar(x)` call? `bar` is just an identifier, and in JS it's not even a constant (non-reassignable variable) by default. The `foo(..)` function is relying on the value of `bar` -- a variable that references the second function -- as a free variable.
 
+所以说这个函数是否还依赖于其他的原因呢？
 So is this program relying on a side cause?
 
+我认为不是的。虽然*可以*用其他的函数来重写`bar`这个变量，但是在代码中我没有这样做，这也不是我的惯例或先例。无论出于什么意图和目的，我的函数都是常量(从不重新分配)。
 I say no. Even though it is *possible* to overwrite the `bar` variable's value with some other function, I am not doing so in this code, nor is it a common practice of mine or precedent to do so. For all intents and purposes, my functions are constants (never reassigned).
 
+考虑一下：
 Consider:
 
 ```js
@@ -157,14 +182,19 @@ function foo(x) {
 foo( 3 );			// 9.424776000000001
 ```
 
+**注意:**JavaScript有内置的`Math.PI`属性，所以我们在本文中仅仅是用`PI`做一个方便的例子。在实践中，尽量使用`Math.PI`还不是你自己定义的。
 **Note:** JavaScript has `Math.PI` built-in, so we're only using the `PI` example in this text as a convenient illustration. In practice, always use `Math.PI` instead of defining your own!
 
+上面的代码怎么样呢？`PI`是否会对函数`foo(..)`造成其他的影响？
 How about the above code snippet? Is `PI` a side cause of `foo(..)`?
 
+两个结果将会合理的帮助我们回答这个问题：
 Two observations will help us answer that question in a reasonable way:
 
+1. 想一下是否每次调用`foo(3)`，都将会返回`9.424..`？**答案是肯定的。**每一次的，如果都给一个相同的输入(`x`),都将会返回相同的输出。
 1. Think about every call you might ever make to `foo(3)`. Will it always return that `9.424..` value? **Yes.** Every single time. If you give it the same input (`x`), it will always return the same output.
 
+2. 
 2. Could you replace every usage of `PI` with its immediate value, and could the program run **exactly** the same as it did before? **Yes.** There's no part of this program that relies on being able to change the value of `PI` -- indeed since it's a `const`, it cannot be reassigned -- so the `PI` variable here is only for readability/maintenance sake. Its value can be inlined without any change in program behavior.
 
 My conclusion: `PI` here is not a violation of the spirit of minimizing/avoiding side effects (or causes). Nor is the `bar(x)` call in the previous snippet.
