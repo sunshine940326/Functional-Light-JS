@@ -16,7 +16,7 @@ The FPer doesn't eliminate all side effects. Rather, the goal is to limit them a
 ## 副作用
 ## Effects On The Side, Please
 
-因果关系 : 一个我们人类对周围世界最基本、最直观的例子。推一下放在桌子边沿上的一本书，书会掉落。不需要你拥有一个物理学的学位你也会知道这是因为你刚刚推了书并且书掉落是因为地心引力，这是一个明确并直接的关系。
+因果关系：一个我们人类对周围世界最基本、最直观的例子，推一下放在桌子边沿上的一本书，书会掉落。不需要你拥有一个物理学的学位你也会知道，这是因为你刚刚推了书并且书掉落是因为地心引力，这是一个明确并直接的关系。
 Cause and effect: one of the most fundamental, intuitive observations we humans can make about the world around us. Push a book off the edge of a table, it falls to the ground. You don't need a physics degree to know the cause was you pushing the book and the effect was gravity pulling it to the ground. There's a clear and direct relationship.
 
 在编程中，我们也完全会处理因果关系。如果你调用了一个函数（起因），就会在屏幕上输出一条消息（结果）。
@@ -36,7 +36,7 @@ function foo(x) {
 var y = foo( 3 );
 ```
 
-在这段琐碎的代码中，因果关系清晰明了，调用函数foo()是起因，传入参数为3将会返回6，将函数结果赋值给变量y是结果。这里没有歧义
+在这段琐碎的代码中，因果关系清晰明了，调用函数foo()是起因，传入参数为3将会返回6，将函数结果赋值给变量y是结果。这里没有歧义。
 In this trivial program, it is immediately clear that calling foo (the cause) with value `3` will have the effect of returning the value `6` that is then assigned to `y` (the effect). There's no ambiguity here.
 
 但是当这种情况：
@@ -54,7 +54,7 @@ foo( 3 );
 这段代码有相同的输出，但是却有很大的不同，这里的因果是没有联系的。这就会有间接的影响。这种方式设置的'y'就是我们所说的副作用。
 This program has the exact same outcome. But there's a very big difference. The cause and the effect are disjoint. The effect is indirect. The setting of `y` in this way is what we call a side effect.
 
-**注意:** 函数引用外部变量时，这就称为自由变量。并不是所有的自由变量引用都是不好的，但是我们要对它们非常小心。
+**注意：** 函数引用外部变量时，这个变量就称为自由变量。并不是所有的自由变量引用都是不好的，但是我们要对它们非常小心。
 **Note:** When a function makes a reference to a variable outside itself, this is called a free variable. Not all free variable references will be bad, but we'll want to be very careful with them.
 
 假使我给你一个函数`bar(..)`，你看不到代码，但是我告诉你这段代码并没有间接的副作用，只有一个显式的返回值会怎么样？
@@ -94,19 +94,19 @@ How sure are you what values are going to be printed at each `console.log(x)`?
 答案是否定的。如果你不确定`foo()`, `bar()`, 和 `baz()`是否有副作用，你就不能保证每一步的`x`将会是什么，除非你检查每个步骤的实现，然后从第一行开始跟踪程序，跟踪您所处的状态的所有更改。
 The correct answer is: not at all. If you're not sure whether `foo()`, `bar()`, and `baz()` are side-effecting or not, you cannot guarantee what `x` will be at each step unless you inspect the implementations of each, **and** then trace the program from line one forward, keeping track of all the changes in state as you go.
 
-换句话说，`console.log(x)`最后的结果是不能分析和预测的除非你已经在心里将整个程序都执行一遍了。
+换句话说，`console.log(x)`最后的结果是不能分析和预测的，除非你已经在心里将整个程序都执行一遍了。
 In other words, the final `console.log(x)` is impossible to analyze or predict unless you've mentally executed the whole program up to that point.
 
-猜猜谁擅长运行你的程序？JS引擎。猜猜谁不擅长运行你的程序？你的代码的读者。然而，你选择在一个或多个函数调用中编写带有(潜在)副作用的代码，这意味着你已经使你的读者不得不将你的程序完整地执行到某一行，以便他们理解这一行。
+猜猜谁擅长运行你的程序？JS引擎。猜猜谁不擅长运行你的程序？你代码的使用者。然而，如果你选择在一个或多个函数调用中编写带有(潜在)副作用的代码，那么这意味着你已经使你的读者必须将你的程序完整地执行到某一行，以便他们理解这一行。
 Guess who's good at running your program? The JS engine. Guess who's not as good at running your program? The reader of your code. And yet, your choice to write code with (potentially) side effects in one or more of those function calls means that you've burdened the reader with having to mentally execute your program in its entirety up to a certain line, for them to understand that line.
 
-如果 `foo()`, `bar()`, 和 `baz()`都没有副作用，它们就不会影响到`x`，这就意味着我们不需要在心里默默地执行它们并且跟踪`x`的变化。这在心里上减轻负担并且使得代码更加的可读。
+如果 `foo()`, `bar()`, 和 `baz()`都没有副作用的话，它们就不会影响到`x`，这就意味着我们不需要在心里默默地执行它们并且跟踪`x`的变化。这在心里上减轻负担并且使得代码更加的可读。
 If `foo()`, `bar()`, and `baz()` were all free of side effects, they could not affect `x`, which means we do not need to execute them to mentally trace what happens with `x`. This is less mental tax, and makes the code more readable.
 
 ### 隐藏原因
 ### Hidden Causes
 
-输出、状态的变化，是最常被引用的副作用的表现。但是另一个有损可读性的实践被作为副作用，思考一下：
+输出、状态的变化，是最常被引用的副作用的表现。但是另一个有损可读性的实践被作为侧因，思考一下：
 Outputs, changes in state, are the most commonly cited manifestation of side effects. But another readability-harming practice is what some refer to as side causes. Consider:
 
 ```js
@@ -160,7 +160,7 @@ function bar(x) {
 foo( 3 );			// 9
 ```
 
-很明显，对于函数`foo(..)`和函数`bar(..)`，唯一和直接的原因就是参数`x`。但是对于调用函数`bar(x)`的时候，`bar`仅仅只是一个标识符，在JS中，它甚至不是一个常量（非可分配常量）。`foo(..)`函数是依赖于一个自有变量`bar`，`bar`是另一个函数的变量。
+很明显，对于函数`foo(..)`和函数`bar(..)`，唯一和直接的原因就是参数`x`。但是`bar(x)`被称为什么呢？`bar`仅仅只是一个标识符，在JS中，默认情况下，它甚至不是一个常量(不可重新分配变量)。`foo(..)`函数依赖于`bar`的值—一个引用第二个函数的变量—作为一个自由变量。
 It's clear that for both `foo(..)` and `bar(..)`, the only direct cause is the `x` parameter. But what about the `bar(x)` call? `bar` is just an identifier, and in JS it's not even a constant (non-reassignable variable) by default. The `foo(..)` function is relying on the value of `bar` -- a variable that references the second function -- as a free variable.
 
 所以说这个函数还依赖于其他的原因吗？
@@ -188,14 +188,14 @@ foo( 3 );			// 9.424776000000001
 上面的代码怎么样呢？`PI`是否会对函数`foo(..)`造成其他的影响？
 How about the above code snippet? Is `PI` a side cause of `foo(..)`?
 
-两个言论将会合理的帮助我们回答这个问题：
+两个观察结果将会合理的帮助我们回答这个问题：
 Two observations will help us answer that question in a reasonable way:
 
-1. 想一下是否每次调用`foo(3)`，都将会返回`9.424..`？**答案是肯定的。**每一次的，如果都给一个相同的输入(`x`),都将会返回相同的输出。
+1. 想一下是否每次调用`foo(3)`，都将会返回`9.424..`？**答案是肯定的。**每一次，如果都给一个相同的输入(`x`),都将会返回相同的输出。
 1. Think about every call you might ever make to `foo(3)`. Will it always return that `9.424..` value? **Yes.** Every single time. If you give it the same input (`x`), it will always return the same output.
 
-2. 你能用它的即时值来代替每一个'PI'吗，并且程序可以和之前一样**正确的**的运行吗？**是的。**程序没有任何一部分依赖于'PI'值得改变，因为'PI'是`const`，他是不能再分配的，所以变量`PI`在这里只是为了便于阅读和维护。它的值可以在不改变程序行为的情况下内联。
-、 . Could you replace every usage of `PI` with its immediate value, and could the program run **exactly** the same as it did before? **Yes.** There's no part of this program that relies on being able to change the value of `PI` -- indeed since it's a `const`, it cannot be reassigned -- so the `PI` variable here is only for readability/maintenance sake. Its value can be inlined without any change in program behavior.
+2. 你能用它当前值来代替每一个'PI'吗，并且程序可以和之前一样**正确的**的运行吗？**是的。**程序没有任何一部分依赖于'PI'值得改变，因为'PI'的类型是`const`，他是不能再分配的，所以变量`PI`在这里只是为了便于阅读和维护。它的值可以在不改变程序行为的情况下内联。
+2. Could you replace every usage of `PI` with its immediate value, and could the program run **exactly** the same as it did before? **Yes.** There's no part of this program that relies on being able to change the value of `PI` -- indeed since it's a `const`, it cannot be reassigned -- so the `PI` variable here is only for readability/maintenance sake. Its value can be inlined without any change in program behavior.
 
 我的结论是：这里的`PI`并不违反最小化和避免副作用的精神。也不是在`bar(x)`之前调用。
 My conclusion: `PI` here is not a violation of the spirit of minimizing/avoiding side effects (or causes). Nor is the `bar(x)` call in the previous snippet.
@@ -203,13 +203,13 @@ My conclusion: `PI` here is not a violation of the spirit of minimizing/avoiding
 在这两种情况下，`PI`和函数`bar`都不是程序的一部分。它们是固定的，不可重新分配的常量。如果他们在整个程序中都不改变，那么我们就不需要担心他们随着状态的变化而变化。因此，他们不会损害程序的可读性。而且它们也不能成为与变量以意想不到的方式发生变化相关的bug的根源。
 In both cases, `PI` and `bar` are not part of the state of the program. They're fixed, non-reassignable ("constant") references. If they don't change throughout the program, we don't have to worry about tracking them as changing state. As such, they don't harm our readability. And they cannot be the source of bugs related to variables changing in unexpected ways.
 
-**注意：**在我看来，使用`const`并不能说明`PI`是一个副作用；使用`var PI`也会造成同样的结果。`PI`是否可重新分配是问题的关键，而不是没有能力不去使用`const`。我们将在下一章讨论减少使用`const`
+**注意：**在我看来，使用`const`并不能说明`PI`是一个副作用；使用`var PI`也会造成同样的结果。`PI`没有被重新分配是问题的关键，而不是有没有使用`const`。我们将在后面的章节讨论`const`。
 **Note:** The use of `const` above does not, in my opinion, make the case that `PI` is absolved as a side cause; `var PI` would lead to the same conclusion. The lack of reassigning `PI` is what matters, not the inability to do so. We'll discuss `const` in a later chapter.
 
-#### 随机数
+#### 随机性
 #### Randomness
 
-你以前可能从来没有考虑过，但是生成的随机结果并不是真正的随机。一个使用`Math.random()`的函数永远都是不可预测的，因为你不能根据它的输入和确定和预测它的输出。所以任何生成唯一随机的ID等都需要依靠程序的其他结果。
+你以前可能从来没有考虑过，但是生成的随机结果并不都是随机的。一个使用`Math.random()`的函数永远都是不是真的随机，因为你不能根据它的输入和确定和预测它的输出。所以任何生成唯一随机的ID等都需要依靠程序的其他结果。
 You may never have considered it before, but randomness is impure. A function that uses `Math.random()` can never be pure, because you cannot ensure/predict its output based on its input. So any code that generates unique random IDs/etc will by definition be considered reliant on your program's side causes.
 
 在计算中，我们使用的是伪随机算法。事实证明，真正的随机是非常难的，所以我们只是用复杂的算法来模拟它，产生的值看起来是随机的。这些算法计算很长的一串数字，但秘密是，如果你知道起始点，实际上这个序列是可以预测的。这个起点被称之为种子。
@@ -218,7 +218,7 @@ In computing, we use what's called pseudo-random algorithms for generation. Turn
 这些语言允许你指定生成随机数的种子。如果你指定了相同的种子，那么你将始终从后续的“随机数”中得到相同的输出序列。这对于测试是非常有用的，但是在真正的应用中使用也是非常危险的。
 Some languages let you specify the seed value for the random number generation. If you always specify the same seed, you'll always get the same sequence of outputs from subsequent "random number" generations. This is incredibly useful for testing purposes, for example, but incredibly dangerous for real world application usage.
 
-在JS中，`Math.random()`的随机性计算是基于间接输入，因为你不能明确种子。因此，我们必须将内建的随机数生成视为原因一个副作用。
+在JS中，`Math.random()`的随机性计算是基于间接输入，因为你不能明确种子。因此，我们必须将内建的随机数生成视为不纯的原因。
 In JS, the randomness of `Math.random()` calculated is based on an indirect input, because you cannot specify the seed. As such, we have to treat built-in random number generation as an impure side cause.
 
 ### I/O效果
@@ -233,7 +233,7 @@ The typical input for the browser JS programmer is user events (mouse, keyboard)
 事实上，这些源既可以是输入也可以是输出， 是因也是果。以DOM为例， 我们更新（产生副作用的结果）一个DOM元素为了给用户展示文字或图片信息，但是DOM的当前状态是对这些操作的隐式输入（产生副作用的原因）
 As a matter of fact, these sources can be both input and output, both cause and effect. Take the DOM, for example. We update (side effect) a DOM element to show text or an image to the user, but the current state of the DOM is an implicit input (side cause) to those operations as well.
 
-
+### 其他的bug
 ### Side Bugs
 
 在程序存在期间产生副作用的原因和副作用可能导致的bug是多种多样的。让我们来研究一个场景来说明这些危害，希望它们能帮助我们认识到在我们自己的程序中类似的错误。
@@ -290,7 +290,7 @@ function deleteOrder(orderId) {
 我敢打赌，一些读者会显然的发现其中潜在的bug。如果`onOrders(..)`的回调在`onUserData(..)`之前运行回调，它会给一个尚未设置的值（`users[userId]`的`userData`对象）添加一个`latestOrder`属性
 I bet for some of you readers one of the potential bugs here is fairly obvious. If the callback `onOrders(..)` runs before the `onUserData(..)` callback, it will attempt to add a `latestOrder` property to a value (the `userData` object at `users[userId]`) that's not yet been set.
 
-因此，一种依赖于因果关系的“bug”是两种不同操作(是否异步)的竞态条件下发生的，我们期望以某种顺序运行，但在某些情况下，可能会以不同的顺序运行。有一些策略可以确保操作的顺序，很明显，在这种情况下订单是至关重要的。
+因此，一种依赖于因果关系的“bug”是两种不同操作(是否异步)的竞态条件，我们期望 以某种顺序运行，但在某些情况下，可能会以不同的顺序运行。有一些策略可以确保操作的顺序，很明显，在这种情况下订单是至关重要的。
 So one form of "bug" that can occur with logic that relies on side causes/effects is the race condition of two different operations (async or not!) that we expect to run in a certain order but under some cases may run in a different order. There are strategies for ensuring the order of operations, and it's fairly obvious that order is critical in that case.
 
 这里还有另一个细小的bug，你发现了吗？
