@@ -739,20 +739,25 @@ simpleList( function impureIO(nums){
 事实上，没有办法定义`rememberNumbers(..)`去产生一个完美纯粹的 `simpleList(..)`的函数。
 In fact, there's no way to define `rememberNumbers(..)` to make a perfectly-pure `simpleList(..)` function.
 
-纯度是信心。但我们不得不承认，在很多情况下，我们所感受到的自信实际上是与我们的计划的背景和我们所知道的有关。在实践中（在JavaScript中），函数纯度的问题不是纯粹的纯粹性，而是关于其纯度的一系列信任。
+纯度是和信心有关的。但我们不得不承认，在很多情况下，我们所感受到的自信实际上是与我们的计划的背景和我们所知道的有关。在实践中（在JavaScript中），函数纯度的问题不是纯粹的纯粹性，而是关于其纯度的一系列信心。
 Purity is about confidence. But we have to admit that in many cases, **any confidence we feel is actually relative to the context** of our program and what we know about it. In practice (in JavaScript) the question of function purity is not about being absolutely pure or not, but about a range of confidence in its purity.
 
 越纯洁越好。您在使寸函数方面付出的努力越多，当您阅读使用它的代码时，您的信心就会越高，这将使代码的一部分更加可读。
 The more pure, the better. The more effort you put into making a function pure(r), the higher your confidence will be when you read code that uses it, and that will make that part of the code more readable.
 
+## 有或者无
 ## There Or Not
 
+到目前为止，我们已经将函数纯度定义为一个没有副作用的函数，并且作为一个函数，给定相同的输入，总是产生相同的输出。这只是两种看待相同特征的不同方式。
 So far, we've defined function purity both as a function without side causes/effects and as a function that, given the same input(s), always produces the same output. These are just two different ways of looking at the same characteristics.
 
+但是，第三种看待函数纯性的方法，也许是最广为接受的定义，即纯函数具有引用透明性。
 But a third way of looking at function purity, and perhaps the most widely accepted definition, is that a pure function has referential transparency.
 
+引用透明性是指一个函数调用可以被它的输出值所取代，并且整个程序的行为不会改变。换句话说，不可能从程序的执行中分辨出函数调用是被执行的，还是它的返回值是在函数调用的位置上内联的。
 Referential transparency is the assertion that a function call could be replaced by its output value, and the overall program behavior wouldn't change. In other words, it would be impossible to tell from the program's execution whether the function call was made or its return value was inlined in place of the function call.
 
+从参考透明的角度来看，这两个程序都有完全相同的行为，它们都是用纯粹的函数构建的:
 From the perspective of referential transparency, both of these programs have identical behavior as they are built with pure functions:
 
 ```js
@@ -787,12 +792,16 @@ var avg = 9;
 console.log( "The average is:", avg );		// The average is: 9
 ```
 
+这两个片段之间的唯一区别在于，在后者中，我们跳过了调用`calculateAverage(nums)`并在它的（`9`）中内联。因为程序的其他部分的行为是相同的，计算(..)具有参考的透明度，因此是一个纯粹的功能
 The only difference between these two snippets is that in the latter one, we skipped the `calculateAverage(nums)` call and just inlined its ouput (`9`). Since the rest of the program behaves identically, `calculateAverage(..)` has referential transparency, and is thus a pure function.
 
+### 精神上的透明
 ### Mentally Transparent
 
+所谓的透明的纯函数*可以*被它的输出代替，这并不意味着它应该被替换。远非如此。
 The notion that a referentially transparent pure function *can be* replaced with its output does not mean that it *should literally be* replaced. Far from it.
 
+我们用在程序中使用函数而不是使用预先计算好的常量的原因不仅仅是应对变化的数据，也是和可读性和适当的抽象等有关。调用函数去计算一列数字的平均值让这部分程序比只是使用确定的值更具有可读性。它向读者讲述了avg从何而来，它意味着什么，等等。
 The reasons we build functions into our programs instead of using pre-computed magic constants are not just about responding to changing data, but also about readability with proper abstractions, etc. The function call to calculate the average of that list of numbers makes that part of the program more readable than the line that just assigns the value explicitly. It tells the story to the reader of where `avg` comes from, what it means, etc.
 
 What we're really suggesting with referential transparency is that as you're reading a program, once you've mentally computed what a pure function call's output is, you no longer need to think about what that exact function call is doing when you see it in code, especially if it appears multiple times.
