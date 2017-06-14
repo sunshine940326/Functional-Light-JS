@@ -13,16 +13,16 @@ But let me not bury the lede here. The punchline to this chapter: it's impossibl
 函数式编程者并没有消除所有的副作用。相反，我们的目标是尽可能的限制他们。要做到这一点，我们首先需要完全理解函数式编程的副作用。
 The FPer doesn't eliminate all side effects. Rather, the goal is to limit them as much as possible. To do that, we first need to fully understand them.
 
-## 副作用
+## 什么是副作用
 ## Effects On The Side, Please
 
-因果关系：一个我们人类对周围世界最基本、最直观的例子，推一下放在桌子边沿上的一本书，书会掉落。不需要你拥有一个物理学的学位你也会知道，这是因为你刚刚推了书并且书掉落是因为地心引力，这是一个明确并直接的关系。
+因果关系：举一个我们人类对周围世界最基本、最直观的例子，推一下放在桌子边沿上的一本书，书会掉落。不需要你拥有一个物理学的学位你也会知道，这是因为你刚刚推了书并且书掉落是因为地心引力，这是一个明确并直接的关系。
 Cause and effect: one of the most fundamental, intuitive observations we humans can make about the world around us. Push a book off the edge of a table, it falls to the ground. You don't need a physics degree to know the cause was you pushing the book and the effect was gravity pulling it to the ground. There's a clear and direct relationship.
 
 在编程中，我们也完全会处理因果关系。如果你调用了一个函数（起因），就会在屏幕上输出一条消息（结果）。
 In programming, we also deal entirely in cause and effect. If you call a function (cause), it displays a message on the screen (effect).
 
-当我们在阅读程序的时候，能够清晰明确的知道每一个起因和每一个结果是非常重要的。在某种程度上，当有明确的因果关系的时候程序的可读性就就会降低。
+当我们在阅读程序的时候，能够清晰明确的知道每一个起因和每一个结果是非常重要的。在某种程度上，通读程序但不能看到因果的直接关系，程序的可读性就会降低。
 When reading a program, it's supremely important that the reader be able to clearly identify each cause and each effect. To any extent where a direct relationship between cause and effect cannot be seen readily upon a read-through of the program, that program's readability is degraded.
 
 思考一下：
@@ -36,7 +36,7 @@ function foo(x) {
 var y = foo( 3 );
 ```
 
-在这段琐碎的代码中，因果关系清晰明了，调用函数foo()是起因，传入参数为3将会返回6，将函数结果赋值给变量y是结果。这里没有歧义。
+在这段代码中，因果关系清晰明了，调用值为`3`的`foo`将具有返回值`6`的效果，调用函数`foo()`是起因，然后将其赋值给`y`是结果。 这里没有歧义。，传入参数为3将会返回6，将函数结果赋值给变量y是结果。这里没有歧义。
 In this trivial program, it is immediately clear that calling foo (the cause) with value `3` will have the effect of returning the value `6` that is then assigned to `y` (the effect). There's no ambiguity here.
 
 但是当这种情况：
@@ -51,13 +51,13 @@ var y;
 
 foo( 3 );
 ```
-这段代码有相同的输出，但是却有很大的不同，这里的因果是没有联系的。这就会有间接的影响。这种方式设置的'y'就是我们所说的副作用。
+这段代码有相同的输出，但是却有很大的差异，这里的因果是没有联系的。这就会有间接的影响。这种方式设置的'y'就是我们所说的副作用。
 This program has the exact same outcome. But there's a very big difference. The cause and the effect are disjoint. The effect is indirect. The setting of `y` in this way is what we call a side effect.
 
-**注意：** 函数引用外部变量时，这个变量就称为自由变量。并不是所有的自由变量引用都是不好的，但是我们要对它们非常小心。
+**注意：** 当函数引用外部变量时，这个变量就称为自由变量。并不是所有的自由变量引用都是不好的，但是我们要对它们非常小心。
 **Note:** When a function makes a reference to a variable outside itself, this is called a free variable. Not all free variable references will be bad, but we'll want to be very careful with them.
 
-假使我给你一个函数`bar(..)`，你看不到代码，但是我告诉你这段代码并没有间接的副作用，只有一个显式的返回值会怎么样？
+假使我给你一个引用来调用函数`bar(..)`，你看不到代码，但是我告诉你这段代码并没有间接的副作用，只有一个显式的返回值会怎么样？
 What if I gave you a reference to call a function `bar(..)` that you cannot see the code for, but I told you that it had no such indirect side effects, only an explicit `return` value effect?
 
 ```js
@@ -91,7 +91,7 @@ console.log( x );
 你能确定每次`console.log(x)`的值都是你想要的吗？
 How sure are you what values are going to be printed at each `console.log(x)`?
 
-答案是否定的。如果你不确定`foo()`, `bar()`, 和 `baz()`是否有副作用，你就不能保证每一步的`x`将会是什么，除非你检查每个步骤的实现，然后从第一行开始跟踪程序，跟踪您所处的状态的所有更改。
+答案是否定的。如果你不确定函数`foo()`、`bar()`和`baz()`是否有副作用，你就不能保证每一步的`x`将会是什么，除非你检查每个步骤的实现，然后从第一行开始跟踪程序，跟踪您所处的状态的所有更改。
 The correct answer is: not at all. If you're not sure whether `foo()`, `bar()`, and `baz()` are side-effecting or not, you cannot guarantee what `x` will be at each step unless you inspect the implementations of each, **and** then trace the program from line one forward, keeping track of all the changes in state as you go.
 
 换句话说，`console.log(x)`最后的结果是不能分析和预测的，除非你已经在心里将整个程序都执行一遍了。
@@ -103,10 +103,10 @@ Guess who's good at running your program? The JS engine. Guess who's not as good
 如果 `foo()`, `bar()`, 和 `baz()`都没有副作用的话，它们就不会影响到`x`，这就意味着我们不需要在心里默默地执行它们并且跟踪`x`的变化。这在心里上减轻负担并且使得代码更加的可读。
 If `foo()`, `bar()`, and `baz()` were all free of side effects, they could not affect `x`, which means we do not need to execute them to mentally trace what happens with `x`. This is less mental tax, and makes the code more readable.
 
-### 隐藏原因
+### 潜在的原因
 ### Hidden Causes
 
-输出、状态的变化，是最常被引用的副作用的表现。但是另一个有损可读性的实践被作为侧因，思考一下：
+输出和状态的变化，是最常被引用的副作用的表现。但是另一个有损可读性的例子是作为其他原因被涉及到的，思考一下：
 Outputs, changes in state, are the most commonly cited manifestation of side effects. But another readability-harming practice is what some refer to as side causes. Consider:
 
 ```js
@@ -133,13 +133,13 @@ foo( 1 );			// 6
 我们可能会感到惊讶两次调用 `foo(1)`返回的结果不一样。
 Might we be surprised that the call to `foo(1)` returned different results from call to call?
 
-`foo(..)`对可读性有一个间接的破坏性。如果没有仔细对函数`foo(..)`进行检查 ，使用者可能不会知道导致这个输出的原因。这*看起来*仅仅像是参数`1`的原因，但却不是这样的。
+`foo(..)`对可读性有一个间接的破坏性。如果没有仔细对函数`foo(..)`进行仔细检查 ，使用者可能不会知道导致这个输出的原因。这*看起来*仅仅像是参数`1`的原因，但却不是这样的。
 `foo(..)` has an indirection of cause that is harmful to readability. The reader cannot see, without inspecting `foo(..)`'s implementation carefully, what causes are contributing to the output effect. It *looks* like the argument `1` is the only cause, but it turns out it's not.
 
 为了帮助可读性，所有决定`foo(..)`输出的原因应该被设置的直接并明显。函数的使用者将会直接看到原因和结果。
 To aid readability, all of the causes that will contribute to determining the effect output of `foo(..)` should be made as direct and obvious inputs to `foo(..)`. The reader of the code will clearly see the cause(s) and effect.
 
-#### 定态
+#### 使用固定的状态
 #### Fixed State
 
 避免副作用就意味着函数`foo(..)`不能使用自有变量了吗？
@@ -160,7 +160,7 @@ function bar(x) {
 foo( 3 );			// 9
 ```
 
-很明显，对于函数`foo(..)`和函数`bar(..)`，唯一和直接的原因就是参数`x`。但是`bar(x)`被称为什么呢？`bar`仅仅只是一个标识符，在JS中，默认情况下，它甚至不是一个常量(不可重新分配变量)。`foo(..)`函数依赖于`bar`的值—一个引用第二个函数的变量—作为一个自由变量。
+很明显，对于函数`foo(..)`和函数`bar(..)`，唯一和直接的原因就是参数`x`。但是`bar(x)`被称为什么呢？`bar`仅仅只是一个标识符，在JS中，默认情况下，它甚至不是一个常量（不可重新分配的变量）。`foo(..)`函数依赖于`bar`的值--作为一个自由变量被第二个函数引用。
 It's clear that for both `foo(..)` and `bar(..)`, the only direct cause is the `x` parameter. But what about the `bar(x)` call? `bar` is just an identifier, and in JS it's not even a constant (non-reassignable variable) by default. The `foo(..)` function is relying on the value of `bar` -- a variable that references the second function -- as a free variable.
 
 所以说这个函数还依赖于其他的原因吗？
@@ -182,7 +182,7 @@ function foo(x) {
 foo( 3 );			// 9.424776000000001
 ```
 
-**注意:**JavaScript有内置的`Math.PI`属性，所以我们在本文中仅仅是用`PI`做一个方便的例子。在实践中，尽量使用`Math.PI`而不是你自己定义的。
+**注意：**JavaScript有内置的`Math.PI`属性，所以我们在本文中仅仅是用`PI`做一个方便的例子。在实践中，尽量使用`Math.PI`而不是你自己定义的。
 **Note:** JavaScript has `Math.PI` built-in, so we're only using the `PI` example in this text as a convenient illustration. In practice, always use `Math.PI` instead of defining your own!
 
 上面的代码怎么样呢？`PI`是否会对函数`foo(..)`造成其他的影响？
@@ -191,34 +191,34 @@ How about the above code snippet? Is `PI` a side cause of `foo(..)`?
 两个观察结果将会合理的帮助我们回答这个问题：
 Two observations will help us answer that question in a reasonable way:
 
-1. 想一下是否每次调用`foo(3)`，都将会返回`9.424..`？**答案是肯定的。**每一次，如果都给一个相同的输入(`x`),都将会返回相同的输出。
+1. 想一下是否每次调用`foo(3)`，都将会返回`9.424..`？**答案是肯定的。**如果每一次都给一个相同的输入(`x`)，那么都将会返回相同的输出。
 1. Think about every call you might ever make to `foo(3)`. Will it always return that `9.424..` value? **Yes.** Every single time. If you give it the same input (`x`), it will always return the same output.
 
-2. 你能用它当前值来代替每一个'PI'吗，并且程序可以和之前一样**正确的**的运行吗？**是的。**程序没有任何一部分依赖于'PI'值得改变，因为'PI'的类型是`const`，他是不能再分配的，所以变量`PI`在这里只是为了便于阅读和维护。它的值可以在不改变程序行为的情况下内联。
+2. 你能用它当前值来代替每一个'PI'吗，并且程序可以和之前一样**正确的**的运行吗？**是的。**程序没有任何一部分依赖于'PI'值的改变，因为'PI'的类型是`const`，它是不能再分配的，所以变量`PI`在这里只是为了便于阅读和维护。它的值可以在不改变程序行为的情况下内联。
 2. Could you replace every usage of `PI` with its immediate value, and could the program run **exactly** the same as it did before? **Yes.** There's no part of this program that relies on being able to change the value of `PI` -- indeed since it's a `const`, it cannot be reassigned -- so the `PI` variable here is only for readability/maintenance sake. Its value can be inlined without any change in program behavior.
 
-我的结论是：这里的`PI`并不违反最小化和避免副作用的精神。也不是在`bar(x)`之前调用。
+我的结论是：这里的`PI`并不违反最小化和副作用（和原因）的精神。在之前的代码也没有调用`bar(x)`。
 My conclusion: `PI` here is not a violation of the spirit of minimizing/avoiding side effects (or causes). Nor is the `bar(x)` call in the previous snippet.
 
-在这两种情况下，`PI`和函数`bar`都不是程序的一部分。它们是固定的，不可重新分配的常量。如果他们在整个程序中都不改变，那么我们就不需要担心他们随着状态的变化而变化。因此，他们不会损害程序的可读性。而且它们也不能成为与变量以意想不到的方式发生变化相关的bug的根源。
+在这两种情况下，`PI`和函数`bar`都不是程序状态的一部分。它们是固定的，不可重新分配的（“常量”）的引用。如果他们在整个程序中都不改变，那么我们就不需要担心他们作为状态变化。因此，他们不会损害程序的可读性。而且它们也不能成为与变量以意想不到的方式发生变化相关的错误的根源。
 In both cases, `PI` and `bar` are not part of the state of the program. They're fixed, non-reassignable ("constant") references. If they don't change throughout the program, we don't have to worry about tracking them as changing state. As such, they don't harm our readability. And they cannot be the source of bugs related to variables changing in unexpected ways.
 
-**注意：**在我看来，使用`const`并不能说明`PI`是一个副作用；使用`var PI`也会造成同样的结果。`PI`没有被重新分配是问题的关键，而不是有没有使用`const`。我们将在后面的章节讨论`const`。
+**注意：**在我看来，上面使用`const`并不是将`PI`没有产生副作用的原因；使用`var PI`也会是同样的结果。`PI`没有被重新分配是问题的关键，而不是有没有使用`const`。我们将在后面的章节讨论`const`。
 **Note:** The use of `const` above does not, in my opinion, make the case that `PI` is absolved as a side cause; `var PI` would lead to the same conclusion. The lack of reassigning `PI` is what matters, not the inability to do so. We'll discuss `const` in a later chapter.
 
 #### 随机性
 #### Randomness
 
-你以前可能从来没有考虑过，但是生成的随机结果并不都是随机的。一个使用`Math.random()`的函数永远都是不是真的随机，因为你不能根据它的输入和确定和预测它的输出。所以任何生成唯一随机的ID等都需要依靠程序的其他结果。
+你以前可能从来没有考虑过，但是生成的随机结果并不都是随机的。一个使用`Math.random()`的函数永远都是不是真的随机，因为你不能根据它的输入和确定和预测它的输出。所以任何生成唯一随机的ID等都需要依靠程序的其他原因。
 You may never have considered it before, but randomness is impure. A function that uses `Math.random()` can never be pure, because you cannot ensure/predict its output based on its input. So any code that generates unique random IDs/etc will by definition be considered reliant on your program's side causes.
 
 在计算中，我们使用的是伪随机算法。事实证明，真正的随机是非常难的，所以我们只是用复杂的算法来模拟它，产生的值看起来是随机的。这些算法计算很长的一串数字，但秘密是，如果你知道起始点，实际上这个序列是可以预测的。这个起点被称之为种子。
 In computing, we use what's called pseudo-random algorithms for generation. Turns out true randomness is pretty hard, so we just kinda fake it with complex algorithms that produce values that seem observably random. These algorithms calculate long streams of numbers, but the secret is, the sequence is actually predictable if you know the starting point. This starting point is referred to as a seed.
 
-这些语言允许你指定生成随机数的种子。如果你指定了相同的种子，那么你将始终从后续的“随机数”中得到相同的输出序列。这对于测试是非常有用的，但是在真正的应用中使用也是非常危险的。
+一些语言允许你指定生成随机数的种子。如果你总是指定了相同的种子，那么你将始终从后续的“随机数”中得到相同的输出序列。这对于测试是非常有用的，但是在真正的应用中使用也是非常危险的。
 Some languages let you specify the seed value for the random number generation. If you always specify the same seed, you'll always get the same sequence of outputs from subsequent "random number" generations. This is incredibly useful for testing purposes, for example, but incredibly dangerous for real world application usage.
 
-在JS中，`Math.random()`的随机性计算是基于间接输入，因为你不能明确种子。因此，我们必须将内建的随机数生成视为不纯的原因。
+在JS中，`Math.random()`的随机性计算是基于间接输入，因为你不能明确种子。因此，我们必须将内建的随机数生成视为不纯的一方。
 In JS, the randomness of `Math.random()` calculated is based on an indirect input, because you cannot specify the seed. As such, we have to treat built-in random number generation as an impure side cause.
 
 ### I/O效果
@@ -233,10 +233,10 @@ The typical input for the browser JS programmer is user events (mouse, keyboard)
 事实上，这些源既可以是输入也可以是输出， 是因也是果。以DOM为例， 我们更新（产生副作用的结果）一个DOM元素为了给用户展示文字或图片信息，但是DOM的当前状态是对这些操作的隐式输入（产生副作用的原因）
 As a matter of fact, these sources can be both input and output, both cause and effect. Take the DOM, for example. We update (side effect) a DOM element to show text or an image to the user, but the current state of the DOM is an implicit input (side cause) to those operations as well.
 
-### 其他的bug
+### 其他的错误
 ### Side Bugs
 
-在程序存在期间产生副作用的原因和副作用可能导致的bug是多种多样的。让我们来研究一个场景来说明这些危害，希望它们能帮助我们认识到在我们自己的程序中类似的错误。
+在程序存在期间产生副作用的原因和副作用可能导致的错误是多种多样的。让我们来看一下一个场景来说明这些危害，希望它们能帮助我们认识到在我们自己的程序中类似的错误。
 The scenarios where side causes and side effects can lead to bugs are as varied as the programs in existence. But let's examine a scenario to illustrate these hazards, in hopes that they help us recognize similar mistakes in our own programs.
 
 思考一下
@@ -287,13 +287,13 @@ function deleteOrder(orderId) {
 }
 ```
 
-我敢打赌，一些读者会显然的发现其中潜在的bug。如果`onOrders(..)`的回调在`onUserData(..)`之前运行回调，它会给一个尚未设置的值（`users[userId]`的`userData`对象）添加一个`latestOrder`属性
+我敢打赌，一些读者会显然的发现其中潜在的错误。如果回调`onOrders(..)`在`onUserData(..)`回调之前运行，它会给一个尚未设置的值（`users[userId]`的`userData`对象）添加一个`latestOrder`属性
 I bet for some of you readers one of the potential bugs here is fairly obvious. If the callback `onOrders(..)` runs before the `onUserData(..)` callback, it will attempt to add a `latestOrder` property to a value (the `userData` object at `users[userId]`) that's not yet been set.
 
-因此，一种依赖于因果关系的“bug”是两种不同操作(是否异步)的竞态条件，我们期望 以某种顺序运行，但在某些情况下，可能会以不同的顺序运行。有一些策略可以确保操作的顺序，很明显，在这种情况下订单是至关重要的。
+因此，一种依赖于因果关系的“错误”是在两种不同操作（是否异步）紊乱情况下发生的，我们期望以某种顺序运行，但在某些情况下，可能会以不同的顺序运行。有一些策略可以确保操作的顺序，很明显，在这种情况下订单是至关重要的。
 So one form of "bug" that can occur with logic that relies on side causes/effects is the race condition of two different operations (async or not!) that we expect to run in a certain order but under some cases may run in a different order. There are strategies for ensuring the order of operations, and it's fairly obvious that order is critical in that case.
 
-这里还有另一个细小的bug，你发现了吗？
+这里还有另一个细小的错误，你发现了吗？
 Another more subtle bug can bite us here. Did you spot it?
 
 考虑下这个调用顺序：
@@ -313,40 +313,40 @@ onOrders(..);
 onDelete(..);
 ```
 
-你看见每一对`fetchOrders(..)` / `onOrders(..)`和`deleteOrder(..)` / `onDelete(..)`都是交替出现了吗？这个潜在的排序会暴漏一个奇怪的状态，即我们的状态管理的副作用。
+你发现每一对`fetchOrders(..)`/`onOrders(..)`和`deleteOrder(..)`/`onDelete(..)`都是交替出现了吗？这个潜在的排序会伴随着我们状态管理的另外的原因/效果会暴漏一个奇怪的状态。
 Do you see the interleaving of `fetchOrders(..)` / `onOrders(..)` with the `deleteOrder(..)` / `onDelete(..)` pair? That potential sequencing exposes a weird condition with our side causes/effects of state management.
 
-在设置`isLatestOrder`标志和使用它来决定是否应该清空用户数据对象的latestOrder属性时，会有一个延迟(因为回调)。在此延迟期间，如果`onOrders(..)`销毁，它可以潜在地改变用户的`latestOrder`引用的顺序值。当`onDelete(..)`在销毁之后，它会假定它仍然需要取消对拉丁顺序引用的设置。
+在设置`isLatestOrder`标志和使用它来决定是否应该清空`users`中的用户数据对象的`latestOrder`属性时，会有一个延迟（因为回调）。在此延迟期间，如果`onOrders(..)`销毁，它可以潜在地改变用户的`latestOrder`引用的顺序值。当`onDelete(..)`在销毁之后，它会假定它仍然需要重`latestOrder`的引用。
 There's a delay in time (because of the callback) between when we set the `isLatestOrder` flag and when we use it to decide if we should empty the `latestOrder` property of the user data object in `users`. During that delay, if `onOrders(..)` callback fires, it can potentially change which order value that user's `latestOrder` references. When `onDelete(..)` then fires, it will assume it still needs to unset the `latestOrder` reference.
 
-bug:数据（状态）*可能*不同步。当潜在的`latestOrder`应该继续指向`onOrders(..)`时，`latestOrder`就会被取消。
+错误：数据（状态）*可能*不同步。当`latestOrder`潜在的会继续指向来自于`onOrders(..)`的较新的命令时，`latestOrder`就会被重置。
 The bug: the data (state) *might* now be out of sync. `latestOrder` will be unset, when potentially it should have stayed pointing at a newer order that came in to `onOrders(..)`.
 
-这种bug最糟糕的是你不能和其他bug一样得到程序崩溃的异常。我们只是有一个不正确的状态;我们的应用程序“默默的”崩溃。
+这种错误最糟糕的是你不能和其他错误一样得到程序崩溃的异常。我们只是有一个不正确的状态；我们的应用程序“默默的”崩溃。
 The worst part of this kind of bug is that you don't get a program-crashing exception like we did with the other bug. We just simply have state that is incorrect; our application's behavior is "silently" broken.
 
-`fetchUserData(..)`和`fetchOrders(..)`的依赖关系是相当明显的，并且直截了当的处理。但是，在`fetchOrders(..)`和`deleteOrder(..)`之间有一个潜在的序列依赖关系，就不太清楚了。这两个似乎更加独立。并且确保他们的订单被保留是比较棘手的，因为你事先不知道(在`fetchOrders(..)`产生结果之前，是否真的必须强制执行。
+`fetchUserData(..)`和`fetchOrders(..)`的依赖关系是相当明显的，并且直截了当的处理。但是，在`fetchOrders(..)`和`deleteOrder(..)`之间存在潜在的序列依赖关系，就不太清楚了。这两个似乎更加独立。并且确保他们的订单被保留是比较棘手的，因为你事先不知道（在`fetchOrders(..)`产生结果之前），是否真的必须强制执行。
 The sequencing dependency between `fetchUserData(..)` and `fetchOrders(..)` is fairly obvious, and straightforwardly addressed. But it's far less clear that there's a potential sequencing dependency between `fetchOrders(..)` and `deleteOrder(..)`. These two seem to be more independent. And ensuring that their order is preserved is more tricky, because you don't know in advance (before the results from `fetchOrders(..)`) whether that sequencing really must be enforced.
 
 是的，一旦`deleteOrder(..)`销毁，你就能重新计算`isLatestOrder`标志。但是现在你有另一个问题：你的UI状态可能不同步。
 Yes, you can recompute the `isLatestOrder` flag once `deleteOrder(..)` fires. But now you have a different problem: your UI state can be out of sync.
 
-在你调用`hideLatestOrderDisplay()`函数之前，你需要先调用`showLatestOrderDisplay()`，但是如果一个新的`latestOrder`已经被设置好了， 你将要跟踪至少三个状态：被删除的状态是否本来是“最新的”、是否是“最新”设置的，这两个顺序有什么不同吗？这些都是可以解决的问题，但无论如何都是不明显的。
+在你调用`hideLatestOrderDisplay()`函数之前，你需要先调用`showLatestOrderDisplay()`，但是如果一个新的`latestOrder`已经被设置好了，你将要跟踪至少三个状态：被删除的状态是否本来是“最新的”、是否是“最新”设置的，和这两个顺序有什么不同吗？这些都是可以解决的问题，但无论如何都是不明显的。
 If you had called the `hideLatestOrderDisplay()` previously, you'll now need to call `showLatestOrderDisplay()`, but only if a new `latestOrder` has in fact been set. So you'll need to track at least three states: was the deleted order the "latest" originally, and is the "latest" set, and are those two orders different? These are solvable problems, of course. But they're not obvious by any means.
 
-所有这些麻烦都是因为我们决定在一组共享的状态下构造我们的代码。
+所有这些麻烦都是因为我们决定在一组共享的状态下构造出有副作用/效果的代码。
 All of these hassles are because we decided to structure our code with side causes/effects on a shared set of state.
 
-函数式编程人员讨厌这类因果的bug因为这有损我们的阅读、推理、验证和最终**相信**代码的能力。这就是为什么他们要如此严肃地对待避免副作用的原因。
+函数式编程人员讨厌这类因果的错误因为这有损我们的阅读、推理、验证和最终**相信**代码的能力。这就是为什么他们要如此严肃地对待避免副作用/效果的原因。
 Functional programmers detest these sorts of side cause/effect bugs because of how much it hurts our ability read, reason about, validate, and ultimately **trust** the code. That's why they take the principle to avoid side causes/effects so seriously.
 
-有很多避免/修复副作用的策略。我们将在本章后面和后面的章节中讨论。我要说一个确定的事情:**写出有副作用的代码是很正常的，**所以我们需要谨慎和刻意的避免产生有副作用的代码。
+有很多避免/修复副作用的策略。我们将在本章后面和后面的章节中讨论。我要说一个确定的事情:**写出有副作用/效果的代码是很正常的，**所以我们需要谨慎和刻意的避免产生有副作用的代码。
 There are multiple different strategies for avoiding/fixing side causes/effects. We'll talk about some later in this chapter, and others in later chapters. I'll say one thing for certain: **writing with side causes/effects is often of our normal default** so avoiding them is going to require careful and intentional effort.
 
 ## 一次就好
 ## Once Is Enough, Thanks
 
-如果你必须要使用副作用来改变状态，那么一种对限制潜在问题有用的操作是幂等。如果您的值的更新是幂次的，那么数据将会有弹性，因为您可能会从不同的副作用源得到多个这样的更新。
+如果你必须要使用副作用来改变状态，那么一种对限制潜在问题有用的操作是幂等。如果你的值的更新是幂次的，那么数据将会适应你可能有不同副作用来源的多个此类更新的情况。
 If you must make side effect changes to state, one class of operations that's useful for limiting the potential trouble is idempotence. If your update of a value is idempotent, then data will be resilient to the case where you might have multiple such updates from different side effect sources.
 
 幂等的定义有点让人困惑；数学家和程序员使用幂等的含义稍有不同。然而，这两种观点对于函数式程序员都是有用的。
@@ -375,7 +375,7 @@ This function mutates an object via reference by incrementing `obj.count`, so it
 从数学的角度来看，幂等指的是在第一次调用后，其输出永远不会改变的操作，如果你将该输出一次又一次地输入到操作中。换句话说,`foo(x)`将产生与`foo(foo(x))`、`foo(foo(foo(x)))`等相同的输出。
 From the mathematical point of view, idempotence means an operation whose output won't ever change after the first call, if you feed that output back into the operation over and over again. In other words, `foo(x)` would produce the same output as `foo(foo(x))`, `foo(foo(foo(x)))`, etc.
 
-一个典型的数学例子是`Math.abs(..)`(取绝对值)。`Math.abs(-2)`的结果是`2`，和`Math.abs(Math.abs(Math.abs(Math.abs(-2))))`的结果相同。像`Math.min(..)`, `Math.max(..)`, `Math.round(..)`, `Math.floor(..)` 和 `Math.ceil(..)`这些工具函数都是幂等的。
+一个典型的数学例子是`Math.abs(..)`（取绝对值）。`Math.abs(-2)`的结果是`2`，和`Math.abs(Math.abs(Math.abs(Math.abs(-2))))`的结果相同。像`Math.min(..)`, `Math.max(..)`, `Math.round(..)`, `Math.floor(..)` 和 `Math.ceil(..)`这些工具函数都是幂等的。
 A typical mathematic example is `Math.abs(..)` (absolute value). `Math.abs(-2)` is `2`, which is the same result as `Math.abs(Math.abs(Math.abs(Math.abs(-2))))`. Utilities like `Math.min(..)`, `Math.max(..)`, `Math.round(..)`, `Math.floor(..)` and `Math.ceil(..)` are also idempotent.
 
 一些自定义的数学运算我们可以用同样的特征来定义:
@@ -458,13 +458,13 @@ Wherever possible, restricting side effects to idempotent operations is much bet
 ### 编程中的幂等
 ### Programming Idempotence
 
-幂等的面向编程的定义是相似的，但不太正式。编程中的幂等仅仅是`f(x);`的结果与`f(x); f(x);`相同而不是要求`f(x) === f(f(x))`。换句话说，之后每一次调用`f(x)`的结果和第一次调用`f(x)`的结果没有任何改变。
+幂等的面向编程的定义也是类似的，但不太正式。编程中的幂等仅仅是`f(x);`的结果与`f(x); f(x)`相同而不是要求`f(x) === f(f(x))`。换句话说，之后每一次调用`f(x)`的结果和第一次调用`f(x)`的结果没有任何改变。
 The programming-oriented definition for idempotence is similar, but less formal. Instead of requiring `f(x) === f(f(x))`, this view of idempotence is just that `f(x);` results in the same program behavior as `f(x); f(x);`. In other words, the result of calling `f(x)` subsequent times after the first call doesn't change anything.
 
-这种观点更符合我们对副作用的观察。因为它更有可能是`f(..)`操作创建了一个幂等的副作用，而不是返回一个幂等输出值。
+这种观点更符合我们对副作用的观察。因为这种`f(..)`操作更有可能产生幂等副作用，而不是必须返回等幂输出值。
 That perspective fits more with our observations about side effects, because it's more likely that such an `f(..)` operation creates an idempotent side effect rather than necessarily returning an idempotent output value.
 
-这种幂等性的方式经常被用于HTTP操作，例如GET或PUT。如果HTTP REST API正确地遵循了幂等的规范指导，那么PUT被定义为一个完全替换资源的更新操作。因此，客户机可以一次或多次发送PUT请求(使用相同的数据)，而服务器将具有相同的结果状态。
+这种幂等性的方式经常被用于HTTP操作，例如GET或PUT。如果HTTP REST API正确地遵循了幂等的规范指导，那么PUT被定义为一个完全替换资源的更新操作。因此，客户端可以一次或多次发送PUT请求（使用相同的数据），而服务器将具有相同的结果状态。
 This idempotence-style is often cited for HTTP operations (verbs) such as GET or PUT. If an HTTP REST API is properly following the specification guidance for idempotence, PUT is defined as an update operation that fully replaces a resource. As such, a client could either send a PUT request once or multiple times (with the same data), and the server would have the same resultant state regardless.
 
 让我们用更具体的编程方法来考虑这个问题，来检查一下使用幂等和没有使用幂等是否产生副作用:
@@ -482,7 +482,7 @@ a[a.length] = 42;
 person.lastUpdated = Date.now();
 ```
 
-记住:这里的幂等性的概念是每一个幂等运算(比如`obj.count = 2`)可以重复多次，而不是在第一次更新后改变程序操作。非幂等操作每次都改变状态。
+记住:这里的幂等性的概念是每一个幂等运算（比如`obj.count = 2`）可以重复多次，而不是在第一次更新后改变程序操作。非幂等操作每次都改变状态。
 Remember: the notion of idempotence here is that each idempotent operation (like `obj.count = 2`) could be repeated multiple times and not change the program operation beyond the first update. The non-idempotent operations change the state each time.
 
 那么更新DOM呢？
@@ -499,10 +499,10 @@ var update = document.createTextNode( order.latestUpdate );
 hist.appendChild( update );
 ```
 
-这里的关键区别在于，幂等的更新替换了DOM元素的内容。DOM元素的当前状态是不相关的，因为它是无条件覆盖的。非幂的操作将内容添加到元素中;隐式地，DOM元素的当前状态是计算下一个状态的一部分。
+这里的关键区别在于，幂等的更新替换了DOM元素的内容。DOM元素的当前状态是无关紧要的，因为它是无条件覆盖的。非幂的操作将内容添加到元素中;隐式地，DOM元素的当前状态是计算下一个状态的一部分。
 The key difference illustrated here is that the idempotent update replaces the DOM element's content. The current state of the DOM element is irrelevant, because it's unconditionally overwritten. The non-idempotent operation adds content to the element; implicitly, the current state of the DOM element is part of computing the next state.
 
-用幂等的方式去定义你的数据不会一直都是可能的，但如果你能做到，这肯定会减少你的副作用在你最意想不到的时候突然出现的可能性。
+我们将不会一直用幂等的方式去定义你的数据，但如果你能做到，这肯定会减少你的副作用在你最意想不到的时候突然出现的可能性。
 It won't always be possible to define your operations on data in an idempotent way, but if you can, it will definitely help reduce the chances that your side effects will crop up to break your expectations when you least expect it.
 
 
@@ -520,7 +520,7 @@ function add(x,y) {
 所有输入(`x`和`y`)和输出(`return ..`)都是直接的，没有自由变量引用。调用`add(3,4)`多次和调用一次是没有区别的。`add(..)`是纯粹的编程风格的幂等。
 All the inputs (`x` and `y`) and outputs (`return ..`) are direct; there are no free variable references. Calling `add(3,4)` multiple times would be indistinguishable from only calling it once. `add(..)` is pure and programming-style idempotent.
 
-然而，并不是所有的纯函数都是数学概念上的幂等，因为它们不需要返回一个值，这个值可以作为它们自己的输入返回。思考一下:
+然而，并不是所有的纯函数都是数学概念上的幂等，因为它们不必返回适合作为自己的输入的反馈值。思考一下:
 However, not all pure functions are idempotent in the mathematical sense, because they don't have to return a value that would be suitable for feeding back in as their own input. Consider:
 
 ```js
@@ -535,7 +535,7 @@ function calculateAverage(list) {
 calculateAverage( [1,2,4,7,11,16,22] );			// 9
 ```
 
-输出的`9`并不是一个数组，所以你不能在`calculateAverage(calculateAverage( .. ))`中将其传回。
+输出的`9`并不是一个数组，所以你不能在`calculateAverage(calculateAverage( .. ))`中将其传入。
 The output `9` is not an array, so you cannot pass it back in: `calculateAverage(calculateAverage( .. ))`.
 
 正如我们前面所讨论的，一个纯函数**可以**引用自由变量，只要这些自由变量不是侧因。
@@ -556,10 +556,10 @@ function cylinderVolume(radius,height) {
 }
 ```
 
-`circleArea(..)`中引用了自由变量`PI`，但是这是一个常量所以不是一个侧因。`cylinderVolume(..)`引用了自由变量`circleArea`这也不是一个侧面的原因，因为这个程序把它当作一个常量引用它的函数值。这两个函数都是纯的。
+`circleArea(..)`中引用了自由变量`PI`，但是这是一个常量所以不是一个侧因。`cylinderVolume(..)`引用了自由变量`circleArea`这也不是一个侧因，因为这个程序把它当作一个常量引用它的函数值。这两个函数都是纯的。
 `circleArea(..)` references the free variable `PI`, but it's a constant so it's not a side cause. `cylinderVolume(..)` references the free variable `circleArea`, which is also not a side cause because this program treats it as, in effect, a constant reference to its function value. Both these functions are pure.
 
-另一个例子，一个函数仍然可以是纯的，但引用自由变量是闭包:
+另一个例子，一个函数仍然可以是纯的，但引用的自由变量是闭包:
 Another example where a function can still be pure but reference free variables is with closure:
 
 ```js
@@ -570,22 +570,22 @@ function unary(fn) {
 }
 ```
 
-`unary(..)`自身它本身显然是纯函数--它唯一的输入是`fn`，并且它唯一的输出是返回的函数--但是内部的关闭了自由变量`fn`的`onlyOneArg(..)`函数是什么样的呢?
+`unary(..)`本身显然是纯函数--它唯一的输入是`fn`，并且它唯一的输出是返回的函数--但是闭合了自由变量`fn`的内部函数`onlyOneArg(..)`是不是纯的呢?
 `unary(..)` itself is clearly pure -- its only input is `fn` and its only output is the `return`ed function -- but what about the inner function `onlyOneArg(..)`, which closes over the free variable `fn`?
 
 它仍然是纯的，因为`fn`永远不变。事实上，我们对这一事实有充分的信心，因为从词汇上讲，这几行是唯一可能重新分配`fn`的。
 It's still pure because `fn` never changes. In fact, we have full confidence in that fact because lexically speaking, those few lines are the only ones that could possibly reassign `fn`.
 
-**注意：**`fn`是一个函数对象的引用，它默认是一个可变的值。例如在程序的其他地方，*能*在这个函数对象中添加一个属性，它在技术上“改变”值(突变，而不是重新分配)。然而，因为我们只有能力去调用它，而不依赖于`fn`以外的任何东西，并且不可能影响函数值的可调用性，因此fn在我们的推理过程中仍然有效地保持不变;它不可能是一个侧因。
+**注意：**`fn`是一个函数对象的引用，它默认是一个可变的值。例如在程序的其他地方，*能*在这个函数对象中添加一个属性，它在技术上“改变”值（突变，而不是重新分配）。然而，因为我们不依赖于`fn`以外的任何东西除了调用它，并且不可能影响函数值的可调用性，因此`fn`在我们的推理过程中仍然有效地保持不变;它不可能是一个侧因。
 **Note:** `fn` is a reference to a function object, which is by default a mutable value. Somewhere else in the program *could* for example add a property to this function object, which technically "changes" the value (mutation, not reassignment). However, since we're not relying on anything about `fn` other than our ability to call it, and it's not possible to affect the callability of a function value, `fn` is still effectively unchanging for our reasoning purposes; it cannot be a side cause.
 
-表达一个函数的纯度的另一种常用方法是：**给定相同的输入(s)，它总是产生相同的输出。**如果你把`3`传给`circleArea(..)`它总是输出相同的结果(`28.274328`)。
+表达一个函数的纯度的另一种常用方法是：**给定相同的输入（一个或多个），它总是产生相同的输出。**如果你把`3`传给`circleArea(..)`它总是输出相同的结果(`28.274328`)。
 Another common way to articulate a function's purity is: **given the same input(s), it always produces the same output.** If you pass `3` to `circleArea(..)`, it will always output the same result (`28.274328`).
 
-如果一个函数在给予相同的输入时，**可能**产生不同的输出，那么它是不纯的。即使这样的函数总是返回相同的值，如果它产生一个间接输出的副作用，那么程序状态每次被调用时都会被改变;这是不纯的。
+如果一个函数在给予相同的输入时，**可能**产生不同的输出，那么它是不纯的。即使这样的函数总是返回相同的值，如果它间接的产生一个输出的副作用，那么程序状态每次被调用时都会被改变；这是不纯的。
 If a function *can* produce a different output each time it's given the same inputs, it is impure. Even if such a function always `return`s the same value, if it produces an indirect output side effect, the program state is changed each time it's called; this is impure.
 
-不纯的函数是不受欢迎的，因为它们使得所有的调用都变得更加难以理解。纯函数的调用是完全可预测的。当有人阅读代码时，会看到多个`circleArea(3)`调用，他们不需要花费额外的精力来计算**每次**的输出结果。
+不纯的函数是不受欢迎的，因为它们使得所有的调用都变得更加难以理解。纯的函数的调用是完全可预测的。当有人阅读代码时，看到多个`circleArea(3)`调用，他们不需要花费额外的精力来计算**每次**的输出结果。
 Impure functions are undesirable because they make all of their calls harder to reason about. A pure function's call is perfectly predictable. When someone reading the code sees multiple `circleArea(3)` calls, they won't have to spend any extra effort to figure out what its output will be *each time*.
 
 ### 相对的纯粹
@@ -608,10 +608,10 @@ var list = [1,2,3,4,5];
 
 var simpleList = rememberNumbers( list );
 ```
-`simpleList(..)`看起来是一个纯函数，因为它的内部只调用`caller(..)`，它刚刚结束了自由变量`nums`。然而，有很多方法证明`simpleList(..)`是不纯的。
+`simpleList(..)`看起来是一个纯函数，因为它的内部只涉及函数`caller(..)`，它刚刚闭合了自由变量`nums`。然而，有很多方法证明`simpleList(..)`是不纯的。
 `simpleList(..)` looks like a pure function, as it's a reference to the inner function `caller(..)`, which just closes over the free variable `nums`. However, there's multiple ways that `simpleList(..)` can actually turn out to be impure.
 
-首先，我们对纯度的断言是基于数组的值(通过`list`和`nums`引用）一直不改变:
+首先，我们对纯度的断言是基于数组的值（通过`list`和`nums`引用）一直不改变:
 First, our assertion of purity is based on the array value (referenced both by `list` and `nums`) never changing:
 
 ```js
@@ -630,10 +630,10 @@ list.push( 6 );
 simpleList( median );		// 3.5
 ```
 
-当我们对数组进行变异时，`simpleList(..)`的调用更改它的输出。所以，`simpleList(..)`是纯呢还是不纯呢？取决于你的视角。对于给定的一组假设来说，它是纯粹的。它可以在任何没有`list.push(6)`的突变的程序中是纯的。
+当我们改变数组时，`simpleList(..)`的调用改变它的输出。所以，`simpleList(..)`是纯呢还是不纯呢？这就取决于你的视角。对于给定的一组假设来说，它是纯函数。在任何没有`list.push(6)`的情况下中是纯的。
 When we mutate the array, the `simpleList(..)` call changes its output. So, is `simpleList(..)` pure or impure? Depends on your perspective. It's pure for a given set of assumptions. It could be pure in any program that didn't have the `list.push(6)` mutation.
 
-我们可以通过改变`rememberNumbers(..)`的定义来防止这种不洁净。一种方法是复制`nums`数组:
+我们可以通过改变`rememberNumbers(..)`的定义来防止这种不纯。一种方法是复制`nums`数组:
 We could guard against this kind of impurity by altering the definition of `rememberNumbers(..)`. One approach is to duplicate the `nums` array:
 
 ```js
@@ -647,7 +647,7 @@ function rememberNumbers(nums) {
 }
 ```
 
-但一个隐藏的副作用可能潜伏着:
+但一个更加棘手的副作用可能潜伏着:
 But an even trickier hidden side effect could be lurking:
 
 ```js
@@ -669,7 +669,7 @@ var simpleList = rememberNumbers( list );
 // [0] was accessed!
 ```
 
-一个更健壮的假设是更改`rememberNumbers(..)的签名。首先，不要接收数组，而是把数字作为单独的参数:
+一个更健壮的假设是更改`rememberNumbers(..)`的签名。首先，不要接收数组，而是把数字作为单独的参数:
 A perhaps more robust option is to change the signature of `rememberNumbers(..)` to not receive an array in the first place, but rather the numbers as individual arguments:
 
 ```js
@@ -683,13 +683,13 @@ var simpleList = rememberNumbers( ...list );
 // [0] was accessed!
 ```
 
-这两个`...`的作用是将列表复制到nums中，而不是通过引用来传递。
+这两个`...`的作用是将列表复制到`nums`中，而不是通过引用来传递。
 The two `...`s have the effect of copying `list` into `nums` instead of passing it by reference.
 
-**注意：**控制台消息的副作用不是来自于`rememberNumbers(..)`，而是从`...list`的蔓延。因此，在这种情况下，`rememberNumbers(..)`和`simpleList(..)`是纯粹的。
+**注意：**控制台消息的副作用不是来自于`rememberNumbers(..)`，而是从`...list`的蔓延。因此，在这种情况下，`rememberNumbers(..)`和`simpleList(..)`是纯的。
 **Note:** The console message side effect here comes not from `rememberNumbers(..)` but from the `...list` spreading. So in this case, both `rememberNumbers(..)` and `simpleList(..)` are pure.
 
-但是如果这种突变更难被发现呢？纯函数和不纯函数的合成总是产生不纯的函数。如果我们将一个不纯的函数传递到另一个纯`simpleList(..)`中，现在就是不纯的:
+但是如果这种突变更难被发现呢？纯函数和不纯函数的合成总是产生不纯的函数。如果我们将一个不纯的函数传递到另一个纯`simpleList(..)`中，那么就是不纯的:
 But what if the mutation is even harder to spot? Composition of a pure function with an impure function **always** produces an impure function. If we pass an impure function into the otherwise pure `simpleList(..)`, it's now impure:
 
 ```js
@@ -727,7 +727,7 @@ function rememberNumbers(...nums) {
 所以`simpleList(..)`是可靠的纯呢！？**不。**:(
 So is `simpleList(..)` reliably pure yet!? **Nope.** :(
 
-我们只是在防范我们可以控制的副作用(通过参照来进行变异)。我们传递的任何函数都有其他副作用，这将会污染`simpleList(..)`的纯洁性:
+我们只是在防范我们可以控制的副作用（通过参照来进行变异）。我们传递的任何函数都有其他副作用，这将会污染`simpleList(..)`的纯洁性:
 We're only guarding against side effects we can control (mutating by reference). Any function we pass that has other side effects will have polluted the purity of `simpleList(..)`:
 
 ```js
