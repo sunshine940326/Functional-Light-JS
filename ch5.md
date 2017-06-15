@@ -1,13 +1,13 @@
 # Functional-Light JavaScript
 # 第五章 : 减少副作用
 
-在第二章，我们讨论了一个函数除了它的返回值之外还可以输出什么内容。现在你应该很熟悉用函数式编程的方法定义一个函数了，所以对于函数式编程的副作用你应该有所了解。
+在第二章，我们讨论了一个函数除了它的返回值之外还有什么输出。现在你应该很熟悉用函数式编程的方法定义一个函数了，所以对于函数式编程的副作用你应该有所了解。
 In Chapter 2, we discussed how a function can have outputs besides its `return` value. By now you should be very comfortable with the FP definition of a function, so the idea of such side outputs -- side effects! -- should smell.
 
-我们将研究各种各样的副作用并且要看看他们为什么会对我们的代码质量和可读性造成损害。
+我们将检查各种各样不同的副作用并且要看看他们为什么会对我们的代码质量和可读性造成损害。
 We're going to examine the various different forms of side effects and see why they are harmful to our code's quality and readability.
 
-这一章的要点是编写出没有副作用的程序是不可能的。当然，也不是不可能，当然可以编写出没有副作用的程序。但是这样的话程序就不会做任何有用和显著的事情。如果你编写出来一个零副作用的程序，你就无法区分它和一个被删除的或者空程序的区别。
+这一章的要点是编写出没有副作用的程序是不可能的。当然，也不是不可能，当然可以。但是这样的话程序就不会做任何有用和显著的事情。如果你编写出来一个零副作用的程序，你就无法区分它和一个被删除的或者空程序的区别。
 But let me not bury the lede here. The punchline to this chapter: it's impossible to write a program with no side effects. Well, not impossible; you certainly can. But that program won't do anything useful or observable. If you wrote a program with zero side effects, you wouldn't be able to tell the difference between it and a deleted or empty program.
 
 函数式编程者并没有消除所有的副作用。相反，我们的目标是尽可能的限制他们。要做到这一点，我们首先需要完全理解函数式编程的副作用。
@@ -22,7 +22,7 @@ Cause and effect: one of the most fundamental, intuitive observations we humans 
 在编程中，我们也完全会处理因果关系。如果你调用了一个函数（起因），就会在屏幕上输出一条消息（结果）。
 In programming, we also deal entirely in cause and effect. If you call a function (cause), it displays a message on the screen (effect).
 
-当我们在阅读程序的时候，能够清晰明确的知道每一个起因和每一个结果是非常重要的。在某种程度上，通读程序但不能看到因果的直接关系，程序的可读性就会降低。
+当我们在阅读程序的时候，能够清晰明确的识别每一个起因和每一个结果是非常重要的。在某种程度上，通读程序但不能看到因果的直接关系，程序的可读性就会降低。
 When reading a program, it's supremely important that the reader be able to clearly identify each cause and each effect. To any extent where a direct relationship between cause and effect cannot be seen readily upon a read-through of the program, that program's readability is degraded.
 
 思考一下：
@@ -36,7 +36,7 @@ function foo(x) {
 var y = foo( 3 );
 ```
 
-在这段代码中，因果关系清晰明了，调用值为`3`的`foo`将具有返回值`6`的效果，调用函数`foo()`是起因，然后将其赋值给`y`是结果。 这里没有歧义。，传入参数为3将会返回6，将函数结果赋值给变量y是结果。这里没有歧义。
+在这段代码中，有很直接的因果关系，调用值为`3`的`foo`将具有返回值`6`的效果，调用函数`foo()`是起因，然后将其赋值给`y`是结果。 这里没有歧义。，传入参数为3将会返回6，将函数结果赋值给变量y是结果。这里没有歧义。
 In this trivial program, it is immediately clear that calling foo (the cause) with value `3` will have the effect of returning the value `6` that is then assigned to `y` (the effect). There's no ambiguity here.
 
 但是当这种情况：
@@ -64,10 +64,10 @@ What if I gave you a reference to call a function `bar(..)` that you cannot see 
 bar( 4 );			// 42
 ```
 
-因为你知道`bar(..)`的内部结构不会有副作用，你可以像这样一样直接的调用`bar(..)`。但是如果你不知道`bar(..)`有没有副作用，为了理解调用这个函数的结果，你必须去阅读和分析它的逻辑。这对你来说是额外的负担。
+因为你知道`bar(..)`的内部结构不会有副作用，你可以像这样直接的调用`bar(..)`。但是如果你不知道`bar(..)`没有副作用，为了理解调用这个函数的结果，你必须去阅读和分析它的逻辑。这对你来说是额外的负担。
 Because you know that the internals of `bar(..)` do not create any side effects, you can now reason about any `bar(..)` call like this one in a much more straightforward way. But if you didn't know that `bar(..)` had no side effects, to understand the outcome of calling it, you'd have to go read and dissect all of its logic. This is extra mental tax burden for the reader.
 
-**副作用函数的可读性更低，**因为它需要更多的阅读来理解程序。
+**有副作用的函数可读性更低，**因为它需要更多的阅读来理解程序。
 **The readability of a side effecting function is less** because it requires more reading to understand the program.
 
 但是程序往往比这个要复杂，思考一下：
@@ -91,13 +91,13 @@ console.log( x );
 你能确定每次`console.log(x)`的值都是你想要的吗？
 How sure are you what values are going to be printed at each `console.log(x)`?
 
-答案是否定的。如果你不确定函数`foo()`、`bar()`和`baz()`是否有副作用，你就不能保证每一步的`x`将会是什么，除非你检查每个步骤的实现，然后从第一行开始跟踪程序，跟踪您所处的状态的所有更改。
+答案是否定的。如果你不确定函数`foo()`、`bar()`和`baz()`是否有副作用，你就不能保证每一步的`x`将会是什么，除非你检查每个步骤的实现，然后从第一行开始跟踪程序，跟踪所有状态的改变。
 The correct answer is: not at all. If you're not sure whether `foo()`, `bar()`, and `baz()` are side-effecting or not, you cannot guarantee what `x` will be at each step unless you inspect the implementations of each, **and** then trace the program from line one forward, keeping track of all the changes in state as you go.
 
-换句话说，`console.log(x)`最后的结果是不能分析和预测的，除非你已经在心里将整个程序都执行一遍了。
+换句话说，`console.log(x)`最后的结果是不能分析和预测的，除非你已经在心里将整个程序执行到这里了。
 In other words, the final `console.log(x)` is impossible to analyze or predict unless you've mentally executed the whole program up to that point.
 
-猜猜谁擅长运行你的程序？JS引擎。猜猜谁不擅长运行你的程序？你代码的使用者。然而，如果你选择在一个或多个函数调用中编写带有(潜在)副作用的代码，那么这意味着你已经使你的读者必须将你的程序完整地执行到某一行，以便他们理解这一行。
+猜猜谁擅长运行你的程序？JS引擎。猜猜谁不擅长运行你的程序？你代码的使用者。然而，如果你选择在一个或多个函数调用中编写带有（潜在）副作用的代码，那么这意味着你已经使你的读者必须将你的程序完整地执行到某一行，以便他们理解这一行。
 Guess who's good at running your program? The JS engine. Guess who's not as good at running your program? The reader of your code. And yet, your choice to write code with (potentially) side effects in one or more of those function calls means that you've burdened the reader with having to mentally execute your program in its entirety up to a certain line, for them to understand that line.
 
 如果 `foo()`, `bar()`, 和 `baz()`都没有副作用的话，它们就不会影响到`x`，这就意味着我们不需要在心里默默地执行它们并且跟踪`x`的变化。这在心里上减轻负担并且使得代码更加的可读。
