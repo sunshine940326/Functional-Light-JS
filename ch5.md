@@ -501,13 +501,13 @@ var update = document.createTextNode( order.latestUpdate );
 hist.appendChild( update );
 ```
 
-这里的关键区别在于，幂等的更新替换了DOM元素的内容。DOM元素的当前状态是无关紧要的，因为它是无条件覆盖的。非幂的操作将内容添加到元素中;隐式地，DOM元素的当前状态是计算下一个状态的一部分。
+这里的关键区别在于，幂等的更新替换了DOM元素的内容。DOM元素的当前状态是独立的，因为它是无条件覆盖的。非幂的操作将内容添加到元素中;隐式地，DOM元素的当前状态是计算下一个状态的一部分。
 The key difference illustrated here is that the idempotent update replaces the DOM element's content. The current state of the DOM element is irrelevant, because it's unconditionally overwritten. The non-idempotent operation adds content to the element; implicitly, the current state of the DOM element is part of computing the next state.
 
 我们将不会一直用幂等的方式去定义你的数据，但如果你能做到，这肯定会减少你的副作用在你最意想不到的时候突然出现的可能性。
 It won't always be possible to define your operations on data in an idempotent way, but if you can, it will definitely help reduce the chances that your side effects will crop up to break your expectations when you least expect it.
 
-
+## 纯粹的快乐
 ## Pure Bliss
 
 没有副作用的函数称为纯函数。在编程的意义上，纯函数是一种等幂函数，因为它不可能有任何副作用。考虑一下
@@ -522,7 +522,7 @@ function add(x,y) {
 所有输入(`x`和`y`)和输出(`return ..`)都是直接的，没有自由变量引用。调用`add(3,4)`多次和调用一次是没有区别的。`add(..)`是纯粹的编程风格的幂等。
 All the inputs (`x` and `y`) and outputs (`return ..`) are direct; there are no free variable references. Calling `add(3,4)` multiple times would be indistinguishable from only calling it once. `add(..)` is pure and programming-style idempotent.
 
-然而，并不是所有的纯函数都是数学概念上的幂等，因为它们不必返回适合作为自己的输入的反馈值。思考一下:
+然而，并不是所有的纯函数都是数学概念上的幂等，因为它们不需要返回一个值，这个值适合作为输入来返回。思考一下:
 However, not all pure functions are idempotent in the mathematical sense, because they don't have to return a value that would be suitable for feeding back in as their own input. Consider:
 
 ```js
@@ -540,7 +540,7 @@ calculateAverage( [1,2,4,7,11,16,22] );			// 9
 输出的`9`并不是一个数组，所以你不能在`calculateAverage(calculateAverage( .. ))`中将其传入。
 The output `9` is not an array, so you cannot pass it back in: `calculateAverage(calculateAverage( .. ))`.
 
-正如我们前面所讨论的，一个纯函数**可以**引用自由变量，只要这些自由变量不是侧因。
+正如我们前面所讨论的，一个纯函数*可以*引用自由变量，只要这些自由变量不是侧因。
 As we discussed earlier, a pure function *can* reference free variables, as long as those free variables aren't side causes.
 
 例子：
@@ -558,7 +558,7 @@ function cylinderVolume(radius,height) {
 }
 ```
 
-`circleArea(..)`中引用了自由变量`PI`，但是这是一个常量所以不是一个侧因。`cylinderVolume(..)`引用了自由变量`circleArea`这也不是一个侧因，因为这个程序把它当作一个常量引用它的函数值。这两个函数都是纯的。
+`circleArea(..)`中引用了自由变量`PI`，但是这是一个常量所以不是一个侧因。`cylinderVolume(..)`引用了自由变量`circleArea`，这也不是一个侧因，因为这个程序把它当作一个常量引用它的函数值。这两个函数都是纯的。
 `circleArea(..)` references the free variable `PI`, but it's a constant so it's not a side cause. `cylinderVolume(..)` references the free variable `circleArea`, which is also not a side cause because this program treats it as, in effect, a constant reference to its function value. Both these functions are pure.
 
 另一个例子，一个函数仍然可以是纯的，但引用的自由变量是闭包:
@@ -578,13 +578,13 @@ function unary(fn) {
 它仍然是纯的，因为`fn`永远不变。事实上，我们对这一事实有充分的信心，因为从词汇上讲，这几行是唯一可能重新分配`fn`的。
 It's still pure because `fn` never changes. In fact, we have full confidence in that fact because lexically speaking, those few lines are the only ones that could possibly reassign `fn`.
 
-**注意：**`fn`是一个函数对象的引用，它默认是一个可变的值。例如在程序的其他地方，*能*在这个函数对象中添加一个属性，它在技术上“改变”值（突变，而不是重新分配）。然而，因为我们不依赖于`fn`以外的任何东西除了调用它，并且不可能影响函数值的可调用性，因此`fn`在我们的推理过程中仍然有效地保持不变;它不可能是一个侧因。
+**注意：**`fn`是一个函数对象的引用，它默认是一个可变的值。在程序的其他地方，例如在这个函数对象中添加一个属性，它在技术上“改变”值（突变，而不是重新分配）。然而，因为我们除了调用`fn`以外不依赖`fn`的任何事情，并且不可能影响函数值的可调用性，因此`fn`在最后的结果中仍然是有效的不变的;它不可能是一个侧因。
 **Note:** `fn` is a reference to a function object, which is by default a mutable value. Somewhere else in the program *could* for example add a property to this function object, which technically "changes" the value (mutation, not reassignment). However, since we're not relying on anything about `fn` other than our ability to call it, and it's not possible to affect the callability of a function value, `fn` is still effectively unchanging for our reasoning purposes; it cannot be a side cause.
 
 表达一个函数的纯度的另一种常用方法是：**给定相同的输入（一个或多个），它总是产生相同的输出。**如果你把`3`传给`circleArea(..)`它总是输出相同的结果(`28.274328`)。
 Another common way to articulate a function's purity is: **given the same input(s), it always produces the same output.** If you pass `3` to `circleArea(..)`, it will always output the same result (`28.274328`).
 
-如果一个函数在给予相同的输入时，**可能**产生不同的输出，那么它是不纯的。即使这样的函数总是返回相同的值，如果它间接的产生一个输出的副作用，那么程序状态每次被调用时都会被改变；这是不纯的。
+如果一个函数每次在给予相同的输入时，**可能**产生不同的输出，那么它是不纯的。即使这样的函数总是返回相同的值，如果它产生间接输出副作用，那么程序状态每次被调用时都会被改变；这是不纯的。
 If a function *can* produce a different output each time it's given the same inputs, it is impure. Even if such a function always `return`s the same value, if it produces an indirect output side effect, the program state is changed each time it's called; this is impure.
 
 不纯的函数是不受欢迎的，因为它们使得所有的调用都变得更加难以理解。纯的函数的调用是完全可预测的。当有人阅读代码时，看到多个`circleArea(3)`调用，他们不需要花费额外的精力来计算**每次**的输出结果。
@@ -610,7 +610,7 @@ var list = [1,2,3,4,5];
 
 var simpleList = rememberNumbers( list );
 ```
-`simpleList(..)`看起来是一个纯函数，因为它的内部只涉及函数`caller(..)`，它刚刚闭合了自由变量`nums`。然而，有很多方法证明`simpleList(..)`是不纯的。
+`simpleList(..)`看起来是一个纯函数，因为它只涉及内部的`caller(..)`函数，它仅仅是闭合了自由变量`nums`。然而，有很多方法证明`simpleList(..)`是不纯的。
 `simpleList(..)` looks like a pure function, as it's a reference to the inner function `caller(..)`, which just closes over the free variable `nums`. However, there's multiple ways that `simpleList(..)` can actually turn out to be impure.
 
 首先，我们对纯度的断言是基于数组的值（通过`list`和`nums`引用）一直不改变:
@@ -635,7 +635,7 @@ simpleList( median );		// 3.5
 当我们改变数组时，`simpleList(..)`的调用改变它的输出。所以，`simpleList(..)`是纯呢还是不纯呢？这就取决于你的视角。对于给定的一组假设来说，它是纯函数。在任何没有`list.push(6)`的情况下中是纯的。
 When we mutate the array, the `simpleList(..)` call changes its output. So, is `simpleList(..)` pure or impure? Depends on your perspective. It's pure for a given set of assumptions. It could be pure in any program that didn't have the `list.push(6)` mutation.
 
-我们可以通过改变`rememberNumbers(..)`的定义来防止这种不纯。一种方法是复制`nums`数组:
+我们可以通过改变`rememberNumbers(..)`的定义来修改这种不纯。一种方法是复制`nums`数组:
 We could guard against this kind of impurity by altering the definition of `rememberNumbers(..)`. One approach is to duplicate the `nums` array:
 
 ```js
@@ -671,7 +671,7 @@ var simpleList = rememberNumbers( list );
 // [0] was accessed!
 ```
 
-一个更健壮的假设是更改`rememberNumbers(..)`的签名。首先，不要接收数组，而是把数字作为单独的参数:
+一个更粗鲁的选择是更改`rememberNumbers(..)`的参数。首先，不要接收数组，而是把数字作为单独的参数:
 A perhaps more robust option is to change the signature of `rememberNumbers(..)` to not receive an array in the first place, but rather the numbers as individual arguments:
 
 ```js
@@ -688,7 +688,7 @@ var simpleList = rememberNumbers( ...list );
 这两个`...`的作用是将列表复制到`nums`中，而不是通过引用来传递。
 The two `...`s have the effect of copying `list` into `nums` instead of passing it by reference.
 
-**注意：**控制台消息的副作用不是来自于`rememberNumbers(..)`，而是从`...list`的蔓延。因此，在这种情况下，`rememberNumbers(..)`和`simpleList(..)`是纯的。
+**注意：**控制台消息的副作用不是来自于`rememberNumbers(..)`，而是从`...list`的延伸中。因此，在这种情况下，`rememberNumbers(..)`和`simpleList(..)`是纯的。
 **Note:** The console message side effect here comes not from `rememberNumbers(..)` but from the `...list` spreading. So in this case, both `rememberNumbers(..)` and `simpleList(..)` are pure.
 
 但是如果这种突变更难被发现呢？纯函数和不纯函数的合成总是产生不纯的函数。如果我们将一个不纯的函数传递到另一个纯`simpleList(..)`中，那么就是不纯的:
@@ -714,7 +714,7 @@ simpleList( lastValue );	// 1
 **注意：**不管`reverse()`看起来多安全(就像JS中的其他数组方法一样)，它返回一个反向数组，实际上它对数组进行了修改，而不是创建一个新的数组。
 **Note:** Despite `reverse()` looking safe (like other array methods in JS) in that it returns a reversed array, it actually mutates the array rather than creating a new one.
 
-我们需要对`rememberNumbers(..)`有的一个更健壮的定义。防止`fn(..)`通过参考的方式来改变它的关闭状态:
+我们需要对`rememberNumbers(..)`有的一个更粗鲁的定义来防止`fn(..)`改变它的关闭的`nums`变量的引用。
 We need a more robust definition of `rememberNumbers(..)` to guard against the `fn(..)` mutating its closed over `nums` via reference:
 
 ```js
