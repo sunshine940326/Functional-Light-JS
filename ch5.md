@@ -849,7 +849,7 @@ Did you spot it?
 这是一个像这棵树一样不能观察到的副作用吗？
 Is a side cause/effect that's unobserved like this tree?
 
-> 如果一棵树落在森林里，但附近没有人听到它，它仍然会发出声音吗？
+> 如果一棵树倒在树林里，有没有声音？
 > If a tree falls in the forest, but no one is around to hear it, does it still make a sound?
 
 通过引用透明的狭义的定义，我想你一定会说`calculateAverage(..)`仍然是一个纯函数。但是，由于在我们的学习中不仅仅是学习学术，而且与实用主义相平衡，我认为这个结论需要更多的观点。让我们探索一下
