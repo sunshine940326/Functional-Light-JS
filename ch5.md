@@ -51,7 +51,7 @@ var y;
 
 foo( 3 );
 ```
-这段代码有相同的输出，但是却有很大的差异，这里的因果是没有联系的。这就会有间接的影响。这种方式设置的`y`就是我们所说的副作用。
+这段代码有相同的输出，但是却有很大的差异，这里的因果是没有联系的。这个影响是间接的。这种方式设置`y`就是我们所说的副作用。
 This program has the exact same outcome. But there's a very big difference. The cause and the effect are disjoint. The effect is indirect. The setting of `y` in this way is what we call a side effect.
 
 **注意：** 当函数引用外部变量时，这个变量就称为自由变量。并不是所有的自由变量引用都是不好的，但是我们要对它们非常小心。
@@ -64,7 +64,7 @@ What if I gave you a reference to call a function `bar(..)` that you cannot see 
 bar( 4 );			// 42
 ```
 
-因为你知道`bar(..)`的内部结构不会有副作用，你可以像这样直接的调用`bar(..)`。但是如果你不知道`bar(..)`没有副作用，为了理解调用这个函数的结果，你必须去阅读和分析它的逻辑。这对你来说是额外的负担。
+因为你知道`bar(..)`的内部结构不会有副作用，你可以像这样直接的调用`bar(..)`。但是如果你不知道`bar(..)`没有副作用，为了理解调用这个函数的结果，你必须去阅读和分析它的逻辑。这对读者来说是额外的负担。
 Because you know that the internals of `bar(..)` do not create any side effects, you can now reason about any `bar(..)` call like this one in a much more straightforward way. But if you didn't know that `bar(..)` had no side effects, to understand the outcome of calling it, you'd have to go read and dissect all of its logic. This is extra mental tax burden for the reader.
 
 **有副作用的函数可读性更低，**因为它需要更多的阅读来理解程序。
@@ -97,10 +97,10 @@ The correct answer is: not at all. If you're not sure whether `foo()`, `bar()`, 
 换句话说，`console.log(x)`最后的结果是不能分析和预测的，除非你已经在心里将整个程序执行到这里了。
 In other words, the final `console.log(x)` is impossible to analyze or predict unless you've mentally executed the whole program up to that point.
 
-猜猜谁擅长运行你的程序？JS引擎。猜猜谁不擅长运行你的程序？你代码的使用者。然而，如果你选择在一个或多个函数调用中编写带有（潜在）副作用的代码，那么这意味着你已经使你的读者必须将你的程序完整地执行到某一行，以便他们理解这一行。
+猜猜谁擅长运行你的程序？JS引擎。猜猜谁不擅长运行你的程序？你代码的读者。然而，如果你选择在一个或多个函数调用中编写带有（潜在）副作用的代码，那么这意味着你已经使你的读者必须将你的程序完整地执行到某一行，以便他们理解这一行。
 Guess who's good at running your program? The JS engine. Guess who's not as good at running your program? The reader of your code. And yet, your choice to write code with (potentially) side effects in one or more of those function calls means that you've burdened the reader with having to mentally execute your program in its entirety up to a certain line, for them to understand that line.
 
-如果 `foo()`, `bar()`, 和 `baz()`都没有副作用的话，它们就不会影响到`x`，这就意味着我们不需要在心里默默地执行它们并且跟踪`x`的变化。这在心里上减轻负担并且使得代码更加的可读。
+如果 `foo()`, `bar()`, 和 `baz()`都没有副作用的话，它们就不会影响到`x`，这就意味着我们不需要在心里默默地执行它们并且跟踪`x`的变化。这在精力上负担更小，并且使得代码更加的可读。
 If `foo()`, `bar()`, and `baz()` were all free of side effects, they could not affect `x`, which means we do not need to execute them to mentally trace what happens with `x`. This is less mental tax, and makes the code more readable.
 
 ### 潜在的原因
@@ -133,7 +133,7 @@ foo( 1 );			// 6
 我们可能会感到惊讶两次调用 `foo(1)`返回的结果不一样。
 Might we be surprised that the call to `foo(1)` returned different results from call to call?
 
-`foo(..)`对可读性有一个间接的破坏性。如果没有对函数`foo(..)`进行仔细检查 ，使用者可能不会知道导致这个输出的原因。这*看起来*仅仅像是参数`1`的原因，但却不是这样的。
+`foo(..)`对可读性有一个间接的破坏性。如果没有对函数`foo(..)`进行仔细检查 ，使用者可能不会知道导致这个输出的原因。这**看起来**仅仅像是参数`1`的原因，但却不是这样的。
 `foo(..)` has an indirection of cause that is harmful to readability. The reader cannot see, without inspecting `foo(..)`'s implementation carefully, what causes are contributing to the output effect. It *looks* like the argument `1` is the only cause, but it turns out it's not.
 
 为了帮助可读性，所有决定`foo(..)`输出的原因应该被设置的直接并明显。函数的使用者将会直接看到原因和结果。
