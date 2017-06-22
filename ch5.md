@@ -1,22 +1,22 @@
 # Functional-Light JavaScript
-# 第五章 : 减少副作用
+# 第5章：减少副作用
 
-在第二章，我们讨论了一个函数除了它的返回值之外还有什么输出。现在你应该很熟悉用函数式编程的方法定义一个函数了，所以对于函数式编程的副作用你应该有所了解。
+在第2章，我们讨论了一个函数除了它的返回值之外还有什么输出。现在你应该很熟悉用函数式编程的方法定义一个函数了，所以对于函数式编程的副作用你应该有所了解。
 In Chapter 2, we discussed how a function can have outputs besides its `return` value. By now you should be very comfortable with the FP definition of a function, so the idea of such side outputs -- side effects! -- should smell.
 
 我们将检查各种各样不同的副作用并且要看看他们为什么会对我们的代码质量和可读性造成损害。
 We're going to examine the various different forms of side effects and see why they are harmful to our code's quality and readability.
 
-这一章的要点是编写出没有副作用的程序是不可能的。当然，也不是不可能，当然可以。但是这样的话程序就不会做任何有用和显著的事情。如果你编写出来一个零副作用的程序，你就无法区分它和一个被删除的或者空程序的区别。
+这一章的要点是：编写出没有副作用的程序是不可能的。当然，也不是不可能，你当然可以编写出没有副作用的程序。但是这样的话程序就不会做任何有用和明显的事情。如果你编写出来一个零副作用的程序，你就无法区分它和一个被删除的或者空程序的区别。
 But let me not bury the lede here. The punchline to this chapter: it's impossible to write a program with no side effects. Well, not impossible; you certainly can. But that program won't do anything useful or observable. If you wrote a program with zero side effects, you wouldn't be able to tell the difference between it and a deleted or empty program.
 
-函数式编程者并没有消除所有的副作用。相反，我们的目标是尽可能的限制他们。要做到这一点，我们首先需要完全理解函数式编程的副作用。
+函数式编程者并没有消除所有的副作用。实际上，我们的目标是尽可能的限制他们。要做到这一点，我们首先需要完全理解函数式编程的副作用。
 The FPer doesn't eliminate all side effects. Rather, the goal is to limit them as much as possible. To do that, we first need to fully understand them.
 
 ## 什么是副作用
 ## Effects On The Side, Please
 
-因果关系：举一个我们人类对周围世界最基本、最直观的例子，推一下放在桌子边沿上的一本书，书会掉落。不需要你拥有一个物理学的学位你也会知道，这是因为你刚刚推了书并且书掉落是因为地心引力，这是一个明确并直接的关系。
+因果关系：举一个我们人类对周围世界影响的最基本、最直观的例子，推一下放在桌子边沿上的一本书，书会掉落。不需要你拥有一个物理学的学位你也会知道，这是因为你刚刚推了书并且书掉落是因为地心引力，这是一个明确并直接的关系。
 Cause and effect: one of the most fundamental, intuitive observations we humans can make about the world around us. Push a book off the edge of a table, it falls to the ground. You don't need a physics degree to know the cause was you pushing the book and the effect was gravity pulling it to the ground. There's a clear and direct relationship.
 
 在编程中，我们也完全会处理因果关系。如果你调用了一个函数（起因），就会在屏幕上输出一条消息（结果）。
@@ -36,7 +36,7 @@ function foo(x) {
 var y = foo( 3 );
 ```
 
-在这段代码中，有很直接的因果关系，调用值为`3`的`foo`将具有返回值`6`的效果，调用函数`foo()`是起因，然后将其赋值给`y`是结果。 这里没有歧义。，传入参数为3将会返回6，将函数结果赋值给变量y是结果。这里没有歧义。
+在这段代码中，有很直接的因果关系，调用值为`3`的 foo 将具有返回值`6`的效果，调用函数`foo()`是起因，然后将其赋值给`y`是结果。这里没有歧义，传入参数为3将会返回6，将函数结果赋值给变量`y`是结果。
 In this trivial program, it is immediately clear that calling foo (the cause) with value `3` will have the effect of returning the value `6` that is then assigned to `y` (the effect). There's no ambiguity here.
 
 但是当这种情况：
