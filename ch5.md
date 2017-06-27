@@ -515,7 +515,7 @@ It won't always be possible to define your operations on data in an idempotent w
 ## 纯粹的快乐
 ## Pure Bliss
 
-没有副作用的函数称为纯函数。在编程的意义上，纯函数是一种等幂函数，因为它不可能有任何副作用。考虑一下
+没有副作用的函数称为纯函数。在编程的意义上，纯函数是一种幂等函数，因为它不可能有任何副作用。考虑一下
 A function with no side causes/effects is called a pure function. A pure function is idempotent in the programming sense, since it cannot have any side effects. Consider:
 
 ```js
@@ -580,10 +580,10 @@ function unary(fn) {
 `unary(..)` 本身显然是纯函数--它唯一的输入是 `fn`，并且它唯一的输出是返回的函数--但是闭合了自由变量 `fn` 的内部函数 `onlyOneArg(..)` 是不是纯的呢?
 `unary(..)` itself is clearly pure -- its only input is `fn` and its only output is the `return`ed function -- but what about the inner function `onlyOneArg(..)`, which closes over the free variable `fn`?
 
-它仍然是纯的，因为 `fn` 永远不变。事实上，我们对这一事实有充分的信心，因为从词汇上讲，这几行是唯一可能重新分配 `fn` 的。
+它仍然是纯的，因为 `fn` 永远不变。事实上，我们对这一事实有充分的信心，因为从词法上讲，这几行是唯一可能重新分配 `fn` 的。
 It's still pure because `fn` never changes. In fact, we have full confidence in that fact because lexically speaking, those few lines are the only ones that could possibly reassign `fn`.
 
-**注意：**`fn` 是一个函数对象的引用，它默认是一个可变的值。在程序的其他地方，例如在这个函数对象中添加一个属性，它在技术上“改变”值（突变，而不是重新分配）。然而，因为我们除了调用 `fn` 以外不依赖 `fn` 的任何事情，并且不可能影响函数值的可调用性，因此 `fn` 在最后的结果中仍然是有效的不变的；它不可能是一个侧因。
+**注意：**`fn`是一个函数对象的引用，它默认是一个可变的值。在程序的其他地方**可能**为这个函数对象添加一个属性，这在技术上“改变”这个值（突变，而不是重新分配）。然而，因为我们除了调用 `fn` ，不依赖 `fn` 以外的任何事情，并且不可能影响函数值的可调用性，因此 `fn` 在最后的结果中仍然是有效的不变的；它不可能是一个侧因。
 **Note:** `fn` is a reference to a function object, which is by default a mutable value. Somewhere else in the program *could* for example add a property to this function object, which technically "changes" the value (mutation, not reassignment). However, since we're not relying on anything about `fn` other than our ability to call it, and it's not possible to affect the callability of a function value, `fn` is still effectively unchanging for our reasoning purposes; it cannot be a side cause.
 
 表达一个函数的纯度的另一种常用方法是：**给定相同的输入（一个或多个），它总是产生相同的输出。**如果你把 `3` 传给 `circleArea(..)` 它总是输出相同的结果（`28.274328`）。
@@ -732,14 +732,14 @@ We need a more robust definition of `rememberNumbers(..)` to guard against the `
 ```js
 function rememberNumbers(...nums) {
 	return function caller(fn){
-	        // 在一个副本中发送！
+	        // 提交一个副本！
 		// send in a copy!
 		return fn( nums.slice() );
 	};
 }
 ```
 
-所以 `simpleList(..)` 是可靠的纯的呢！？**不。**:(
+所以 `simpleList(..)` 是可靠的纯的吗！？**不。**:(
 So is `simpleList(..)` reliably pure yet!? **Nope.** :(
 
 我们只防范我们可以控制的副作用（通过引用变异）。我们传递的任何带有副作用的函数，都将会污染 `simpleList(..)` 的纯度:
@@ -754,10 +754,10 @@ simpleList( function impureIO(nums){
 事实上，没有办法定义 `rememberNumbers(..)` 去产生一个完美纯粹的 `simpleList(..)` 的函数。
 In fact, there's no way to define `rememberNumbers(..)` to make a perfectly-pure `simpleList(..)` function.
 
-纯度是和信心有关的。但我们不得不承认，在很多情况下，我们所感受到的自信实际上是与我们的背景有关。在实践中（在 JavaScript 中），函数纯度的问题不是纯粹的纯粹性，而是关于其纯度的一系列信心。
+纯度是和信心有关的。但我们不得不承认，在很多情况下，**我们所感受到的自信实际上是与我们程序的上下文**和我们对我们程序了解有关的。在实践中（在 JavaScript 中），函数纯度的问题不是纯粹的纯粹性，而是关于其纯度的一系列信心。
 Purity is about confidence. But we have to admit that in many cases, **any confidence we feel is actually relative to the context** of our program and what we know about it. In practice (in JavaScript) the question of function purity is not about being absolutely pure or not, but about a range of confidence in its purity.
 
-越纯洁越好。制作纯函数时越努力，当您阅读使用它的代码时，您的信心就会越高，这将使代码的一部分更加可读。
+越纯洁越好。制作纯函数时越努力，当您阅读使用它的代码时，你的信心就会越高，这将使代码的一部分更加可读。
 The more pure, the better. The more effort you put into making a function pure(r), the higher your confidence will be when you read code that uses it, and that will make that part of the code more readable.
 
 ## 有或者无
@@ -769,7 +769,7 @@ So far, we've defined function purity both as a function without side causes/eff
 但是，第三种看待函数纯性的方法，也许是广为接受的定义，即纯函数具有引用透明性。
 But a third way of looking at function purity, and perhaps the most widely accepted definition, is that a pure function has referential transparency.
 
-引用透明性是指一个函数调用可以被它的输出值所取代，并且整个程序的行为不会改变。换句话说，不可能从程序的执行中分辨出函数调用是被执行的，还是它的返回值是在函数调用的位置上内联的。
+引用透明性是指一个函数调用可以被它的输出值所代替，并且整个程序的行为不会改变。换句话说，不可能从程序的执行中分辨出函数调用是被执行的，还是它的返回值是在函数调用的位置上内联的。
 Referential transparency is the assertion that a function call could be replaced by its output value, and the overall program behavior wouldn't change. In other words, it would be impossible to tell from the program's execution whether the function call was made or its return value was inlined in place of the function call.
 
 从引用透明的角度来看，这两个程序都有完全相同的行为因为它们都是用纯粹的函数构建的：
@@ -822,7 +822,7 @@ The reasons we build functions into our programs instead of using pre-computed m
 我们真正建议使用引用透明是当你阅读程序，一旦你已经在内心计算出纯函数调用输出的是什么的时候，当你看到它的代码的时候不需要再去思考确切的函数调用是做什么，特别是如果它出现很多次。
 What we're really suggesting with referential transparency is that as you're reading a program, once you've mentally computed what a pure function call's output is, you no longer need to think about what that exact function call is doing when you see it in code, especially if it appears multiple times.
 
-这个结果有一点像你在心里面定义一个 `const`，当你阅读的时候，你可以直接跳过并且不需要花更多的精力去计算炼。
+这个结果有一点像你在心里面定义一个 `const`，当你阅读的时候，你可以直接跳过并且不需要花更多的精力去计算。
 That result becomes kinda like a mental `const` declaration, which as you're reading you can transparently swap in and not spend any more mental energy working out.
 
 希望纯函数的这种特性的重要性是显而易见的。我们正在努力使我们的程序更容易读懂。我们能做的一种方法是给读者较少的工作，通过提供帮助来跳过不必要的东西，这样他们就可以把注意力集中在重要的事情上。
@@ -865,7 +865,7 @@ Is a side cause/effect that's unobserved like this tree?
 > 如果一棵树落在森林里，但附近没有人听到它，它仍然会发出声音吗？
 > If a tree falls in the forest, but no one is around to hear it, does it still make a sound?
 
-通过引用透明的狭义的定义，我想你一定会说 `calculateAverage(..)` 仍然是一个纯函数。但是，由于在我们的学习中不仅仅是学习学术，而且与实用主义相平衡，我认为这个结论需要更多的观点。让我们探索一下
+通过引用透明的狭义的定义，我想你一定会说 `calculateAverage(..)` 仍然是一个纯函数。但是，由于在我们的学习中不仅仅是学习学术，而且与实用主义相平衡，我认为这个结论需要更多的观点。让我们探索一下。
 By the narrowest definition of referential transparency, I think you'd have to say `calculateAverage(..)` is still a pure function. But as we're trying to not just be academic in our study, but balanced with pragmatism, I think this conclusion needs more perspective. Let's explore.
 
 #### 性能效果
@@ -910,10 +910,10 @@ This silly `specialNumber(..)` algorithm is deterministic and thus pure from the
 但是，这个函数必须做一些工作来计算一些较大的数字，特别是输入像 `987654321` 这样的数字。如果我们需要在我们的程序中多次获得特定的特殊号码，那么结果的缓存意味着后续的调用效率会更高。
 However, the function has to do quite a bit of work to calculate some of the bigger numbers, especially the `987654321` input. If we needed to get that particular special number multiple times throughout our program, the `cache`ing of the result means that subsequent calls are far more efficient.
 
-**注意：**思考一个有趣的事情：CPU 在执行任何给定操作时产生的热量，即使是最纯粹的函数 / 程序，也是不可避免的副作用吗？那么 CPU 时间延迟，因为它花时间在一个纯操作上，然后再执行另一个操作？
+**注意：**思考一个有趣的事情：CPU 在执行任何给定操作时产生的热量，即使是最纯粹的函数 / 程序，也是不可避免的副作用吗？那么 CPU 的时间延迟，因为它花时间在一个纯操作上，然后再执行另一个操作，是否也算作副作用？
 **Note:** An interesting thing to ponder: is the heat produced by the CPU while performing any given operation an unavoidable side effect of even the most pure functions/programs? What about just the CPU time delay as it spends time on a pure operation before it can do another one?
 
-假设你运行 `specialNumber（987654321）` 一次，并手动将该结果粘贴到一些变量 / 常量中。程序通常是高度模块化的并且全局可访问的范围并不是通常你想要在这些独立部分之间分享状态的方式。`specialNumber（..）` 有自己的缓存（尽管恰好是使用一个全局变量来实现这一点），是更好的抽象的状态共享。
+假设你运行 `specialNumber（987654321）` 一次，并手动将该结果粘贴到一些变量 / 常量中。程序通常是高度模块化的并且全局可访问的范围并不是通常你想要在这些独立部分之间分享状态的方式。让`specialNumber（..）` 使用自己的缓存（即使它恰好是使用一个全局变量来实现这一点）是对状态共享更好的抽象。
 Don't be so quick to assume that you could just run the `specialNumber(987654321)` calculation once and manually stick that result in some variable / constant. Programs are often highly modularized and globally accessible scopes are not usually the way you want to go around sharing state between those independent pieces. Having `specialNumber(..)` do its own caching (even though it happens to be using a global variable to do so!) is a more preferable abstraction of that state sharing.
 
 关键是，如果 `specialNumber（..）` 只是程序访问和更新 `cache` 副作用的唯一部分，那么引用透明的观点可以显然适用，这可以被看作是可以接受的实际的“欺骗”的纯函数思想。
@@ -922,7 +922,7 @@ The point is that if `specialNumber(..)` is the only part of the program that ac
 但是真的应该这样吗？
 But should it?
 
-典型的，这种性能优化方面的副作用是通过隐藏缓存结果来实现的，因此它们**不能**被程序的任何其他部分所观察到。这个过程被称为 “memorization”。 我一直认为这个词是 “memorization”；我不知道这个想法是从哪里来的，但它肯定有助于我更好地理解这个概念。
+典型的，这种性能优化方面的副作用是通过隐藏缓存结果产生的，因此它们**不能**被程序的任何其他部分所观察到。这个过程被称为 “记忆化”。 我一直认为这个词是 “记忆化”；我不知道这个想法是从哪里来的，但它肯定有助于我更好地理解这个概念。
 Typically, this sort of performance optimization side effecting is done by hiding the caching of results so they *cannot* be observed by any other part of the program. This process is referred to as memoization. I always think of that word as "memorization"; I have no idea if that's even remotely where it comes from, but it certainly helps me understand the concept better.
 
 思考一下：
@@ -955,7 +955,7 @@ var specialNumber = (function memoization(){
 })();
 ```
 
-我们在 `specialNumber(..)` IIFE 的范围内包含 `specialNumber(..)` 的 `cache` 的副作用，所以现在我们确定程序的其他部分**能**观察到它们，不仅仅是它们**不**观察它们。
+我们已经遏制 `memoization()` 内部 `specialNumber(..)` IIFE 范围内的 `cache` 的副作用，所以现在我们确定程序没有任何别的部分**能**观察到它们，不仅仅是它们**不**观察它们。
 We've contained the `cache` side causes/effects of `specialNumber(..)` inside the scope of the `memoization()` IIFE, so now we're sure that no other parts of the program *can* observe them, not just that they *don't* observe them.
 
 最后一句话似乎是一个的微妙观点，但实际上我认为这可能是**整章中最重要的一点**。再读一遍。
@@ -964,31 +964,31 @@ That last sentence may seem like a subtle point, but actually I think it might b
 回到这个哲学理论：
 Back to this philosophical musing:
 
-> 如果一棵树倒在森林里，有没有声音？
+> 如果一棵树落在森林里，但没有人在听到它，是否依然发出声音？
 > If a tree falls in the forest, but no one is around to hear it, does it still make a sound?
 
-通过这个暗喻，我所得到的是：无论是否产生声音，如果我们从不创建一个我们不在树的附近树倒下时我们仍然可以听声音的方案。
+通过这个暗喻，我所得到的是：无论是否产生声音，如果我们从不创造一个当树落下时周围没有人的情景这会更好一些。当树落下时，我们总是会听到声音。
 Going with the metaphor, what I'm getting at is: whether the sound is made or not, it would be better if we never create a scenario where the tree can fall without us being around; we'll always hear the sound when a tree falls.
 
 减少副作用的目的并不是他们在程序中不能被观察到，而是设计一个程序，让副作用尽可能的少，因为这使代码更容易理解。一个没有观察到的**发生**的副作用的程序在这个目标上并不像一个**不能**观察它们的程序那么有效。
 The purpose of reducing side causes/effects is not per se to have a program where they aren't observed, but to design a program where fewer of them are possible, because this makes the code easier to reason about. A program with side causes/effects that *happen* to not be observed is not nearly as effective in this goal as a program that *cannot* observe them.
 
-如果副作用可能发生，作者和读者必须尽量对付它们。使它们不会发生，作家和读者都会对任何部可能或不可能发生的事情都有更多的信心。
+如果副作用可能发生，作者和读者必须尽量对付它们。使它们不会发生，作家和读者都会对任何可能或不可能发生的事情都有更多的信心。
 If side causes/effect can happen, the writer and reader must mentally juggle them. Make it so they can't happen, and both writer and reader will find more confidence over what can and cannot happen in any part.
 
-## 精简
+## 净化
 ## Purifying
 
 如果你有不纯的功能，你不能重构为纯的，你能做些什么？
 What can you do if you have an impure function that you cannot refactor to be pure?
 
-您需要确定该函数具有什么样的副作用。副作用的不同之处来自各方面，可能是由于词法自由变量、引用变化，甚至是 `this` 的绑定。 我们将研究解决这些情况的方法。
+您需要确定该函数具有什么样的副作用。副作用的不同之处来自各方面，可能是由于词法自由变量、引用变化，甚至是 `this` 的绑定。我们将研究解决这些情况的方法。
 You need to figure what kind of side causes/effects the function has. It may be that the side causes/effects come variously from lexical free variables, mutations-by-reference, or even `this` binding. We'll look at approaches that address each of these scenarios.
 
 ### 封闭的影响
 ### Containing Effects
 
-如果副作用的本质是使用词法自由变量，并且您可以选择修改周围的代码，那么您可以使用范围来封装它们。
+如果副作用的本质是使用词法自由变量，并且您可以选择修改周围的代码，那么您可以使用作用域来封装它们。
 If the nature of the concerned side causes/effects is with lexical free variables, and you have the option to modify the surrounding code, you can encapsulate them using scope.
 
 Recall:
@@ -1008,8 +1008,8 @@ One option for purifying this code is to create a wrapper around both the variab
 
 ```js
 function safer_fetchUserData(userId,users) {
-        // 简单的，原生的 ES6 + 浅拷贝，也可以
-	// 做 w / 不同的库或框架（这里不知道怎么翻译w）
+        // 简单的、原生的 ES6 + 浅拷贝，也可以
+	// 用不同的库或框架
 	// simple, naive ES6+ shallow object copy, could also
 	// be done w/ various libs or frameworks
 	users = Object.assign( {}, users );
@@ -1032,13 +1032,13 @@ function safer_fetchUserData(userId,users) {
 	}
 }
 ```
-`userId` 和 `users` 都是原始的的 `fetchUserData` 的输入，`users` 也被输出。`safer_fetchUserData(..)` 取出他们的输入，并返回 `users`。为了确保在 `users` 被突变时我们不会在外部创建副作用，我们制作一个 `users` 的本地副本。
+`userId` 和 `users` 都是原始的的 `fetchUserData` 的输入，`users` 也被输出。`safer_fetchUserData(..)` 取出他们的输入，并返回 `users`。为了确保在 `users` 被改变时我们不会在外部创建副作用，我们制作一个 `users` 的本地副本。
 Both `userId` and `users` are input for the original `fetchUserData`, and `users` is also output. The `safer_fetchUserData(..)` takes both of these inputs, and returns `users`. To make sure we're not creating a side effect on the outside when `users` is mutated, we make a local copy of `users`.
 
-这种技术的实用性有限，主要是因为如果你不能将函数本改为纯的，那么你也不可能修改其周围的代码。然而，如果可能，探索它是有帮助的，因为它是我们最简单的修复。
+这种技术的实用性有限，主要是因为如果你不能将函数本身改为纯的，那么你也不可能修改其周围的代码。然而，如果可能，探索它是有帮助的，因为它是我们最简单的修复。
 This technique has limited usefulness mostly because if you cannot modify a function itself to be pure, you're not that likely to be able to modify its surrounding code either. However, it's helpful to explore it if possible, as it's the simplest of our fixes.
 
-无论这是否是重构纯功能的实用技术，更重要的就是功能纯度只需要深入皮肤。 也就是说，**函数的纯度是从外部判断的**，不管内部是什么。只要一个函数的使用表现为纯的，它就是纯的。在纯函数的内部，可以适度的使用不纯的技术，由于各种原因，包括最常见的表现、性能。正如他们所说的“海龟垂钓”。
+无论这是否是重构纯函数的实用技术，更重要的就是纯函数深度只到皮肤。也就是说，**函数的纯度是从外部判断的**，不管内部是什么。只要一个函数的使用表现为纯的，它就是纯的。在纯函数的内部，可以适度的使用不纯的技术，由于各种原因，包括最常见的表现、性能。正如他们所说的“世界是一只驮着一只一直驮下去的乌龟群”。
 Regardless of whether this will be a practical technique for refactoring to pure functions, the more important take-away is that function purity only need be skin deep. That is, the **purity of a function is judged from the outside**, regardless of what goes on inside. As long as a function's usage behaves pure, it is pure. Inside a pure function, impure techniques can be used -- in moderation! -- for a variety of reasons, including most commonly, for performance. It's not necessarily, as they say, "turtles all the way down".
 
 不过要小心，程序的任何部分都是不纯的，即使它被包装并且只能通过纯函数使用，也是代码错误和困惑读者的潜在的根源。总体目标是尽可能减少副作用，而不仅仅是隐藏它们。
@@ -1149,7 +1149,7 @@ largeCount;		// 0
 这需要大量的手动操作来避免一些副作用；如果我们一开始就没有它们，那就容易多了。但如果我们别无选择，那么这种额外的努力是值得的，以避免我们的项目出现意外。
 That's a lot of manual work to avoid a few side causes/effects; it'd be a lot easier if we just didn't have them in the first place. But if we have no choice, this extra effort is well worth it to avoid surprises in our programs.
 
-**注意：**这种技术只有在处理同步代码时才有用。异步代码不能可靠地使用这种方法实现，因为如果程序的其他部分在临时访问 / 修改状态变量，它就无法防止意外。
+**注意：**这种技术只有在处理同步代码时才有用。异步代码不能可靠地使用这种方法实现，因为如果程序的其他部分也在访问 / 修改状态变量，它就无法防止意外。
 **Note:** This technique really only works when you're dealing with synchronous code. Asynchronous code can't reliably be managed with this approach because it can't prevent surprises if other parts of the program access/modify the state variables in the interim.
 
 ### 逃避影响
@@ -1176,7 +1176,7 @@ function handleInactiveUsers(userList,dateCutoff) {
 }
 ```
 
-`userList` 数组本身，加上其中的对象，都发生了突变。保护这些副作用的一种策略是先做一个深拷贝（而不是浅拷贝）：
+`userList` 数组本身，加上其中的对象，都发生了改变。保护这些副作用的一种策略是先做一个深拷贝（而不是浅拷贝）：
 Both the `userList` array itself, plus the objects in it, are mutated. One strategy to protect against these side effects is to do a deep (well, just not shallow) copy first:
 
 ```js
