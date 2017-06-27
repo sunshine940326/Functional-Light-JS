@@ -1181,7 +1181,7 @@ Both the `userList` array itself, plus the objects in it, are mutated. One strat
 
 ```js
 function safer_handleInactiveUsers(userList,dateCutoff) {
-        // 拷贝 list 和使用它的对象
+        // 拷贝列表和其中 `user` 的对象
 	// make a copy of both the list and its user objects
 	let copiedUserList = userList.map( function mapper(user){
 	        // 拷贝 `user` 对象
@@ -1236,20 +1236,20 @@ safer_generate( { prefix: "foo" } );
 These strategies are in no way fool-proof; the safest protection against side causes/effects is to not do them. But if you're trying to improve the readability and confidence level of your program, reducing the side causes/effects wherever possible is a huge step forward.
 
 
-基本上，我们并没有真正消除副作用，而是包含和限制它们，以便我们的代码更加的可验证和可靠。如果我们后来遇到程序错误，我们知道我们的代码部分仍然使用副作用是最有可能的罪魁祸首。
+基本上，我们并没有真正消除副作用，而是包含和限制它们，以便我们的代码更加的可验证和可靠。如果我们后来遇到程序错误，我们知道我们的代码使用副作用的部分最有可能是罪魁祸首。
 Essentially, we're not really eliminating side causes/effects, but rather containing and limiting them, so that more of our code is verifiable and reliable. If we later run into program bugs, we know that the parts of our code still using side causes/effects are the most likely culprits.
 
 ## 总结
 ## Summary
 
-副作用对代码的可读性和质量都有害，因为它们使您的代码难以理解。副作用也是程序中最常见的错误**原因**之一，因为很难欺骗他们。幂等一种策略，通过基本上创建一次性操作来限制副作用。
+副作用对代码的可读性和质量都有害，因为它们使您的代码难以理解。副作用也是程序中最常见的错误**原因**之一，因为很难欺骗他们。幂等是一种策略，通过本质上创建一次性操作来限制副作用。
 Side effects are harmful to code readability and quality because they make your code much harder to understand. Side effects are also one of the most common *causes* of bugs in programs, because juggling them is hard. Idempotence is a strategy for restricting side effects by essentially creating one-time-only operations.
 
-纯功能是最好避免副作用。纯函数是给相同输入时总是返回相同输出，并且没有副作用或其他原因。参考透明度进一步指出 —— 更多的是作为一种精神操练而不是字面行为 —— 纯函数的调用是可以用它的输出来代替，并且程序的行为不会被改变。
+纯函数是最好避免副作用。纯函数是给定相同输入时总是返回相同输出，并且没有副作用。引用透明更近一步的状态是 —— 更多的作为一种精神操练而不是文字行为 —— 纯函数的调用是可以用它的输出来代替，并且程序的行为不会被改变。
 Pure functions are how we best avoid side effects. A pure function is one that always returns the same output given the same input, and has no side causes or side effects. Referential transparency further states that -- more as a mental exercise than a literal action -- a pure function's call could be replaced with its output and the program would not have altered behavior.
 
-将一个不纯的函数重构为纯函数是首选。但是，如果不可能，尝试封装副作用，或者创建一个纯粹的接口来反对他们。
+将一个不纯的函数重构为纯函数是首选。但是，如果不可能，尝试封装副作用，或者创建一个纯粹的接口来对抗他们。
 Refactoring an impure function to be pure is the preferred option. But if that's not possible, try encapsulating the side causes/effects, or creating a pure interface against them.
 
-没有程序可以完全没有副作用。但是在尽可能多的地方更喜欢纯粹的功能。尽可能地收集不纯的功能副作用，以便在出现错误时最容易识别和审核错误的凶手。
+没有程序可以完全没有副作用。但是在实际中的很多地方更喜欢纯函数。尽可能地收集纯函数的副作用，以便在出现错误时更加容易地识别和审查出出错的地方。
 No program can be entirely free of side effects. But prefer pure functions in as many places as that's practical. Collect impure functions side effects together as much as possible, so that it's easier to identify and audit the most likely culprits of bugs when they arise.
